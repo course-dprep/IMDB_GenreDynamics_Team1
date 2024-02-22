@@ -1,7 +1,7 @@
 # How do consumers preferences change over time? 
 
 ## Introduction
-We are interested in the way the consumer preferences change over time. We are planning to research this phenomenon through different variables. Our dependent variable is going to be the viewers rating, and our explanotory variables are going to be: 
+We are interested in the way the consumer preferences change over time. We are planning to research this phenomenon through different variables. Our dependent variable is going to be the viewers rating, and our explanatory variables are going to be: 
 ```
 Genre			(Dummy)
 Series vs. Movies 	(Dummy)
