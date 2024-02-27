@@ -1,25 +1,45 @@
-#Retrieving the data for analysis
+library(tidyverse)
 
-create
-url_rating <- "https://datasets.imdbws.com/title.ratings.tsv.gz"
-url_episodes <- "https://datasets.imdbws.com/title.episode.tsv.gz"
-url_akas <-"https://datasets.imdbws.com/title.akas.tsv.gz"
-url_crew <- "https://datasets.imdbws.com/title.crew.tsv.gz"
-url_basic <- "https://datasets.imdbws.com/title.basics.tsv.gz"
+Data_Source <- list(
+  "https://datasets.imdbws.com/title.ratings.tsv.gz",
+  "https://datasets.imdbws.com/title.episode.tsv.gz",
+  "https://datasets.imdbws.com/title.akas.tsv.gz",
+  "https://datasets.imdbws.com/title.crew.tsv.gz",
+  "https://datasets.imdbws.com/title.basics.tsv.gz"
+)
 
-# Download the dataset from the URL
-download.file(url_rating, destfile = "Ratings.csv", method = "auto")
-download.file(url_episodes, destfile = "Episodes.csv", method = "auto" )
-download.file(url_episodes, destfile = "Akas.csv", method = "auto" )
-download.file(url_episodes, destfile = "Crew.csv", method = "auto" )
-download.file(url_episodes, destfile = "Episodes.csv", method = "auto" )
+Download_data <- function(Data) {
+  # Create an empty list to store the data frames
+  dfs <- list()
+  
+  # Loop through each URL in the list
+  for (url in Data) {
+    # Extract the file name from the URL
+    file_name <- basename(url)
+    
+    # Download the file
+    download.file(url, destfile = file_name, mode = "wb")
+    
+    # Read the downloaded file into R
+    df <- read_tsv(file_name)
+    
+    # Append the data frame to the list
+    dfs[[file_name]] <- df
+    
+    # Remove the downloaded file
+    file.remove(file_name)
+  }
+  
+  # Return the list of data frames
+  return(dfs)
+}
 
+# Call the function
+downloaded_data <- Download_data(Data_Source)
 
-# Load the dataset into RStudio
-ratings <- read.csv("Ratings.csv", header = TRUE, sep = "", skip = 0)
-episodes <- read.csv("Episodes.csv", header = TRUE, sep = "", skip = 0)
-akas <- read.csv("Akas.csv", header = TRUE, sep = "", skip = 0)
-crew <- read.csv("Crew.csv", header = TRUE, sep = "", skip = 0)
-basic <- read.csv("Basic.csv", header = TRUE, sep = "", skip = 0)
-
-
+# Access each data frame using its file name
+ratings <- downloaded_data[["title.ratings.tsv.gz"]]
+episodes <- downloaded_data[["title.episode.tsv.gz"]]
+akas <- downloaded_data[["title.akas.tsv.gz"]]
+crew <- downloaded_data[["title.crew.tsv.gz"]]
+basics <- downloaded_data[["title.basics.tsv.gz"]]
