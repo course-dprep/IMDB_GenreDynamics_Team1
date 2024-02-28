@@ -21,7 +21,7 @@ Download_data <- function(Data) {
     download.file(url, destfile = file_name, mode = "wb")
     
     # Read the downloaded file into R
-    df <- read_tsv(file_name)
+    df <- read_csv(file_name)
     
     # Append the data frame to the list
     dfs[[file_name]] <- df
@@ -43,3 +43,4 @@ episodes <- downloaded_data[["title.episode.tsv.gz"]]
 akas <- downloaded_data[["title.akas.tsv.gz"]]
 crew <- downloaded_data[["title.crew.tsv.gz"]]
 basics <- downloaded_data[["title.basics.tsv.gz"]]
+
