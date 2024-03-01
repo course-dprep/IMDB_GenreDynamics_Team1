@@ -79,7 +79,7 @@ Open your command line tool:
 
 ## Authors
 Timo Phillipse           
-Bram Teunissen           bwg_teunissen
+Bram Teunissen           bwg-teunissen
 Rodrigo Pačeko Rudzājs   
 Dian de Ridder           Ciertje
 Linda van den Boogaar     	
