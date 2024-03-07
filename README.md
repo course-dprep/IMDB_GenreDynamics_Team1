@@ -76,8 +76,9 @@ Open your command line tool:
   -Three parts: data_preparation, analysis, and paper (including tex files).
 
 ## Authors
+
 Timo Philipse            timophilipse 
 Bram Teunissen           bwg_teunissen
 Rodrigo Pačeko Rudzājs   rprudzajs
 Dian de Ridder           Ciertje
-Linda van den Boogaar    lindavdboogaart 	
+Linda van den Boogaart   lindavdboogaart 	
