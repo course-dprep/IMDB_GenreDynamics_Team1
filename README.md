@@ -1,14 +1,12 @@
-#Did you see this?!
-##Consumer movie and series rating pattens over time 
+# Did you see this?!
+
+## Consumer movie and series rating pattens over time 
 
 * insert some image
 
 
 ## Introduction
 This repository analyses consumer behaviour pattern on movie and serie ratings. The achieve this goal the exploratory variables (), are regressed on the Outcome variable (averageRatings). 
-
-DV  averageRating   The mean rating determined by the number of votes (numVotes)
-IV  genre           The categorical variable that determines the type of genre of movie ** m **  or serie ** s ** 
 
 Genre			(Dummy)
 Series vs. Movies 	(Dummy)
@@ -20,7 +18,7 @@ Date			(Continuous String)
 
 If movie > running time (Conditional Dummy)
 if series > number of season and episodes
-```
+
 Lastly, we add general filters: First off, we'll only be looking at English movies and series, with their original title. Second off, we will have a cut off based on the number of votes on the movies and series. So, if the movie or serie has to little votes it will be cut out.
 
 Perhaps the trend changed over time from, different running time lengths in movies or episodes of a serie, maybe the genre changed from horror to romantical.
@@ -78,8 +76,9 @@ Open your command line tool:
   -Three parts: data_preparation, analysis, and paper (including tex files).
 
 ## Authors
-Timo Philipse            timophilipse
-Bram Teunissen           bwg-teunissen
-Rodrigo Pačeko Rudzājs   
+
+Timo Philipse            timophilipse 
+Bram Teunissen           bwg_teunissen
+Rodrigo Pačeko Rudzājs   rprudzajs
 Dian de Ridder           Ciertje
-Linda van den Boogaar     	
+Linda van den Boogaart   lindavdboogaart 	
