@@ -1,12 +1,20 @@
 # Cleaning the Data
-movie_data <- read_csv(movie_data)
-
 So after retrieving and mergig our data directly form the IMBD site, we now need to chcek and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
 
 ```{r libraries, message=FALSE, warning=FALSE}
 install(tidyverse)
 library(tidyverse)
 ```
+
+```{r reformatting the data, message=FALSE, warning=FALSE}
+movie_data <- read_csv(movie_data)
+
+movie_data <- movie_data %>%
+  mutate(across(c(tconst, directors, writers, titleType, isAdult,genres, parentTconst,region,language,isOriginalTitle), as.factor)) %>%
+  mutate(across(c(averageRating,numVotes,runtimeMinutes, title,seasonNumber, episodeNumber), as.numeric)) %>%
+  mutate(across(c(primaryTitle, originalTitle,types, attributes),as.string))
+```
+
 
 First, let's think about some operalization basics. Or more specifically, the operalization of our variables.
 
@@ -74,4 +82,12 @@ So as you may have seen these observation are heavily left skewed. So we are ind
 
 Let's filter these observations out now. 
 
+```{r}
+movie_data <- movie_data %>%
+  filter(numVotes > 100) 
+```
+
+# IV data_set
+
+Now that we have clean
 
