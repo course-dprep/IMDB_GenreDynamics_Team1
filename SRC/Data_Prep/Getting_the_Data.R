@@ -56,6 +56,10 @@ akas <- akas %>%
   mutate(tconst = titleId) %>%
   select(-titleId)
 
+episodes <- episodes %>%
+  mutate(across(episodeNumber, as.numeric)) %>% 
+  mutate(across(seasonNumber, as.numeric))
+
 #For example, let's merge rating (our dv) with basics (one of our iv's)
 #Data_set <- left_join(ratings, basics, by = "tconst")
 #while this was nice, we need a larger scale operalization.
