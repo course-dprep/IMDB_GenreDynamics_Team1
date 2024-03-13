@@ -1,46 +1,63 @@
-#Now let's think about some operalization basics. Or more specifically, the operalization of our variables.
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("stringr")
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(stringr)
 
-#starting with out DV: ratings
-print(summary(movie_data$averageRating))
+#input
+movie_data <- read_csv("movie_data.csv")
 
-#Okay. So the scale is okay BUT remember that these are AVERAGE ratings, and that on average ratings 1 and 10 are quite extreem and frankly, unrealistic.
-#let's visualize how ratings are distributed
+#clean raw 
+movie_data <- movie_data %>%
+  mutate(across(c(tconst, directors, writers, titleType, isAdult,genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
+  mutate(across(c(averageRating,numVotes,runtimeMinutes, title, seasonNumber, episodeNumber), as.numeric)) 
 
-ggplot(movie_data), aes(x = averageRating)) +
-  geom_histogram(binwidth = 1, fill = "darkorange", color = "black") +
-  labs(title = "Distribution of averageRating",
-       x = "Average Rating",y = "Frequency") +
-  scale_x_continuous(breaks = seq(0, 10, by = 1)) +  
-  theme_minimal()
+movie_data <- movie_data %>% filter(numVotes> 100) %>%
+  filter(isOriginalTitle== 1) %>%
+  distinct(primaryTitle, .keep_all = TRUE) 
 
-ggplot(movie_data, aes(x = averageRating)) +
-  geom_histogram(binwidth = 0.1, fill = "orange", color = "black") +
-  scale_x_continuous(breaks = seq(0, 10, by = 0.5), limits = c(0, 10), labels = scales::number_format(accuracy = 0.1)) +
-  labs(x = "averageRating", y = "Frequency") +
-  theme_minimal()
+movie_data<- movie_data %>% 
+  filter(titleType %in% c("movie", "tvMovie", "tvMiniSeries", "tvSeries"))
 
-#as you can see there appears to be a normal distribution that is slightly skewed to the left.
-#If you think logically about this this may be a result from the number of reviews given as opposed to the actual rating
+movie_data <- movie_data %>%
+  mutate(movie_dummy = ifelse(str_detect(titleType, regex("movie", ignore_case = TRUE)), 1, 0),
+         newfilm_dummy = ifelse(startYear > 1999, 1, 0),
+         above_avg = ifelse(averageRating > mean(averageRating), 1, 0),
+         drama_dummy = ifelse(str_detect(genres, regex("drama", ignore_case = TRUE)), 1, 0)) %>%
+  filter(drama_dummy == 1) %>%
+  select(-attributes, -ordering, -region, -language, -isOriginalTitle, -parentTconst, -episodeNumber, -seasonNumber, -title, -originalTitle)
 
-print(summary(movie_data$numVotes))
+#make a beter targetted data file
+movie_data <- movie_data %>%
+  select(tconst, averageRating,numVotes, titleType, startYear, runtimeMinutes, genres)
+  
+#make a window for analysis
+slide_window <- movie_data %>%
+  group_by(startYear) %>%
+  count()
 
-#do you see how tha average movie only has 106 votes? Or even 5! that will defiantely influence the average 
-ggplot(movie_data, aes(x = numVotes)) +
-  geom_dotplot(fill = "darkorange", color = "black", binwidth = 500) +
-  labs(title = "Distribution of numVotes",
-       x = "Number of Votes", y = "Frequency") + 
-  theme_minimal()
+movie_data <- movie_data %>%
+  filter(startYear >= 1925) %>%
+  mutate(slide_window_5 = cut(startYear, breaks = seq(1925, 2025, by = 5), labels = paste(seq(1925, 2020, by = 5), "-", seq(1929, 2024, by = 5)), include.lowest = TRUE))
 
-movie_data$numVotes_group <- cut(movie_data$numVotes, breaks = c(-Inf, 50, Inf), labels = c("Below 50", "Above 50"))
-print(table(movie_data$numVotes_group))
+slide_window <- movie_data %>%
+  group_by(slide_window_5) %>%
+  count()
 
+#pivor the data wide for a more smooth analysis
+movie_data_test <- movie_data %>%
+  mutate(genres = tolower(genres)) %>%
+  separate_rows(genres, sep = ",") %>%
+  mutate(genre_dummy = 1) %>%
+  pivot_wider(names_from = genres, values_from = genre_dummy, values_fill = list(genre_dummy = 0)) %>%
+  rename(scifi = `sci-fi`) %>%
+  rename(filmnoir = `film-noir`) %>%
+  rename(gameshow = `game-show`) %>%
+  rename(realitytv = `reality-tv`) %>%
+  rename(talkshow = `talk-show`)
 
-below_100 <- movie_data %>%
-  select(numVotes) %>%
-  filter(numVotes < 100)
-
-ggplot(below_100, aes(x = numVotes)) +
-  geom_histogram() +
-  labs(title = "Distribution of numVotes Below 100",
-       x = "Group (Interval of 10)", y = "Number of Votes") +
-  theme_minimal()
+#output save
+write_csv(movie_data, "movie_data_cleaned.csv")
