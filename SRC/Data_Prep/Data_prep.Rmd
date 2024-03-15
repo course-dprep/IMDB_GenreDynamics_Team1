@@ -2,23 +2,30 @@
 So after retrieving and mergig our data directly form the IMBD site, we now need to chcek and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
 
 ```{r libraries, message=FALSE, warning=FALSE}
-install(tidyverse)
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("stringr")
+
 library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(stringr)
 ```
 
 ```{r reformatting the data, message=FALSE, warning=FALSE}
 movie_data <- read_csv(movie_data)
 
 movie_data <- movie_data %>%
-  mutate(across(c(tconst, directors, writers, titleType, isAdult,genres, parentTconst,region,language,isOriginalTitle), as.factor)) %>%
-  mutate(across(c(averageRating,numVotes,runtimeMinutes, title,seasonNumber, episodeNumber), as.numeric)) %>%
-  mutate(across(c(primaryTitle, originalTitle,types, attributes),as.string))
+  mutate(across(c(tconst, directors, writers, titleType, isAdult,genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
+  mutate(across(c(averageRating,numVotes,runtimeMinutes, title, seasonNumber, episodeNumber), as.numeric)) 
+
 ```
 
 
 First, let's think about some operalization basics. Or more specifically, the operalization of our variables.
 
-# starting with out DV: ratings
+## starting with out DV: ratings
 ```{r Raw DV print}
 print(summary(movie_data$averageRating))
 ```
@@ -87,7 +94,148 @@ movie_data <- movie_data %>%
   filter(numVotes > 100) 
 ```
 
-# IV data_set
+## IV data_set
 
-Now that we have clean
+Now that we have cleaned our DV. let's look at our IV's. First are some basic decisions. Movies are presented multiple times, in multiple countries. So we want to filter on the original title.
+```{r}
+movie_data <- movie_data %>%
+  filter(isOriginalTitle== 1) %>%
+  distinct(primaryTitle, .keep_all = TRUE) 
+```
+
+Next, we want to make sure we can differentiate between movie vs. series. This is because we  aren interested in generes, and those may be dependent on wether it is a movie vs. series. But we also want to see if we can solve some missing values and drop some irrelevant columns about attributes. 
+
+```{r}
+movie_data<- movie_data %>% 
+  filter(titleType %in% c("movie", "tvMovie", "tvMiniSeries", "tvSeries"))
+
+movie_data <- movie_data %>%
+  mutate(movie_dummy = ifelse(str_detect(titleType, regex("movie", ignore_case = TRUE)), 1, 0),
+         newfilm_dummy = ifelse(startYear > 1999, 1, 0),
+         above_avg = ifelse(averageRating > mean(averageRating), 1, 0),
+         drama_dummy = ifelse(str_detect(genres, regex("drama", ignore_case = TRUE)), 1, 0)) %>%
+  filter(drama_dummy == 1) %>%
+  select(-attributes, -ordering, -region, -language, -isOriginalTitle, -parentTconst, -episodeNumber, -seasonNumber, -title, -originalTitle)
+
+```
+
+We are interest in genre patterns over time. However, these patterns may change not as quickly as on a yearly basis. Therefore, we construct a window that captures 5 years of viewer patterns. Because we do not know how these averRating votes we dynamic over time (for series), we assume that the yearStart is the year in which the most number of votes (numVotes) are generated. This is logical, because if this is positive the series will be continued, and if the reveiws are negative the series will be liekly to be discontinued. How the rating drops as the perc quality of the series drops over time, is for the orupose of this study left out of the equation.
+
+```{r}
+movie_data <- movie_data %>%
+  select(tconst, averageRating,numVotes, titleType, startYear, runtimeMinutes, genres)
+  
+movie_data %>%
+  group_by(startYear) %>%
+  count()
+
+# Assuming movie_data is your data frame
+movie_data <- movie_data %>%
+  filter(startYear >= 1925) %>%
+  mutate(slide_window_5 = cut(startYear, breaks = seq(1925, 2025, by = 5), labels = paste(seq(1925, 2020, by = 5), "-", seq(1929, 2024, by = 5)), include.lowest = TRUE))
+
+movie_data %>%
+  group_by(slide_window_5) %>%
+  count()
+```
+
+Excellent, we now have a window time frame for out analysis. Next we pivot the genres wider to that they can be nicely formatted for out analysis.
+
+```{r}
+movie_data <- movie_data %>%
+  mutate(genres = tolower(genres)) %>%
+  separate_rows(genres, sep = ",") %>%
+  mutate(genres = as.factor(genres))
+```
+
+Good. But before we can continue we have to do some 'eye-conemetrics' and show if there might be data pattern before we run our analysis. First, we look at how number of votes and rating behave for each genre.
+```{r}
+ggplot(movie_data, aes(x = numVotes, y = averageRating, color= genres)) +
+  geom_point() + 
+  facet_wrap(~genres)
+```
+As you can see there is only a very small patern there. Typically, very few votes lead to all types of values, including extreme ones. However, as the number of votes seem to increase this extreme pattern decresaes slightly. This means that the number of votes continues to be relevant for our analysis and may even bias our results. 
+
+Let's see how the actual ratings are then distrubuted across genres
+```{r}
+
+ggplot(movie_data, aes(averageRating, color= genres))+
+  geom_bar() +
+  facet_wrap(~genres)
+```
+
+As you can see, most of the genres appear to have some normal distribution going on. This is great! let's look at it with a qq plot to confirm our enthousiasm.
+
+```{r}
+ggplot(movie_data, aes(sample = averageRating, color = genres)) +
+  stat_qq() +
+  facet_wrap(~genres)
+```
+
+Okay, so it looks like there is some normal distribution. How about homoskedacity?
+
+```{r}
+residuals <- movie_data$averageRating - mean(movie_data$averageRating)
+fitted_values <- movie_data$averageRating
+
+# Create a data frame for plotting
+plot_data <- data.frame(Fitted_Values = fitted_values, Residuals = residuals)
+
+# Plot residuals versus fitted values
+ggplot(plot_data, aes(x = Fitted_Values, y = Residuals)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +  # Add a smooth line to visualize any patterns
+  labs(x = "Fitted Values", y = "Residuals") +  # Add axis labels
+  ggtitle("Residuals vs. Fitted Values")  # Add a plot title
+```
+
+That also looks suspiciously good! How about independence?
+
+```{r}
+
+# Calculate residuals
+residuals <- movie_data$averageRating - mean(movie_data$averageRating)
+
+# Create a sequence of indices
+indices <- seq_along(residuals)
+
+# Create a data frame for plotting
+plot_data <- data.frame(Index = indices, Residuals = residuals)
+
+# Plot residuals versus index
+ggplot(plot_data, aes(x = Index, y = Residuals)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +  
+  labs(x = "Index", y = "Residuals") +  
+  ggtitle("Residuals vs. Index")
+```
+
+Linearity looks chaotics but okay. It may be a little smaller on the left and increases to the right but this is very little. So last, linearity. This is tricky, because there is no reason for genre to lead to a higher or lower rating. This is really specific to the watcher and also how the movie/series are doing. But when we add the time variable it can be that there is a relation between these elements, albeit unlikely to be linear. 
+
+```{r}
+ggplot(movie_data, aes(x = slide_window_5, y = averageRating)) +
+  geom_point() +
+  facet_wrap(~genres)
+````
+
+Okay well that not real linear. There is some trend though. So we are going to continue with out analysis. 
+However Let's clean the data set a little so each genre is a neat dummy. 
+
+```{r}
+movie_data <- movie_data %>%
+  mutate(genre_dummy = 1) %>%
+  pivot_wider(names_from = genres, values_from = genre_dummy, values_fill = list(genre_dummy = 0)) %>%
+  rename(scifi = `sci-fi`) %>%
+  rename(filmnoir = `film-noir`) %>%
+  rename(gameshow = `game-show`) %>%
+  rename(realitytv = `reality-tv`) %>%
+  rename(talkshow = `talk-show`)
+
+```
+
+## Let's save our data file
+Don't leave before saving! 
+```{r save file}
+write_csv(movie_data, "movie_data_cleaned.csv")
+```
 
