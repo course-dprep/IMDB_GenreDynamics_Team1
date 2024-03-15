@@ -1,0 +1,32 @@
+---
+title: "Investigating the influence of genre preferences on movie/series rating patterns over time"
+author: Team 1 - Timo Philipse, Bram Teunissen, Rodrigo Pačeko Rudzājs, Dian de Ridder & Linda van den Boogaart
+output:
+  html_document: default
+---
+
+# Research motivation
+The entertainment industry is a dynamic industry. Consumer preferences continuously change, and new movies and series are continuously being produced. Genre continues to be an important topic in the entertainment industry. Genre preferences indicate what consumers liked to watch in the past, and therefore probably also would like to watch in the future. Thus, genre can serve as a selection criteria, based on which consumers decide whether to watch a certain movie or not. Therefore, an understanding of genre preferences gives movie producers a direction on what type of genre they should adopt to increase chances of success and to best deliver the message they want to bring across. Consequently, it is important to investigate the evolution of consumers’ genre preferences over time.
+
+## Research question
+In this paper we aim to answer the following research question:
+
+**How do consumers' movie genre preferences change over time?**
+
+## Research method
+In this paper we investigate consumers’ movie and series preferences using five datasets containing movie data. First, these datasets are merged, inspected, and cleaned Next, the data is analyzed  using regression analysis. Consumers' movie/serie ratings (averageRatings) serve as the dependent variable. Consequently, the explanatory variables are regressed on averageRatings. The explanatory variables are: 
+
+* Genre
+* Series vs Movies 
+* Running Time 
+* Director 
+* Adult title vs non-adult title
+* Date
+
+To improve the reliability of our results, a cut off based on the number of votes on the movies and series will be used. Since the dependent variable is **average** ratings, movies/series with only a few votes may receive more extreme average ratings. This can be the case because each rating, including the extreme ones, receives more weight when calculating the average, simply because there are only a few ratings. So, the average ratings may be more extreme, causing to skew the overall results. Therefore, movies/series receiving a number of votes that are below the cut off won't be included in the regression analysis. 
+
+## Results
+
+## Discussion & conclusion
+
+

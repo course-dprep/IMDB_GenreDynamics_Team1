@@ -1,41 +1,24 @@
-# Did you see this?!
-
-## Consumer movie and series rating pattens over time 
-
-* insert some image
-
-
-## Introduction
-This repository analyses consumer behaviour pattern on movie and serie ratings. The achieve this goal the exploratory variables (), are regressed on the Outcome variable (averageRatings). 
-
-Genre			(Dummy)
-Series vs. Movies 	(Dummy)
-Running Time	        (Dummy)
-Director		(Dummy)
-Adult 			(Dummy) 
-Region		        (Dummy)
-Date			(Continuous String)
-
-If movie > running time (Conditional Dummy)
-if series > number of season and episodes
-
-Lastly, we add general filters: First off, we'll only be looking at English movies and series, with their original title. Second off, we will have a cut off based on the number of votes on the movies and series. So, if the movie or serie has to little votes it will be cut out.
-
-Perhaps the trend changed over time from, different running time lengths in movies or episodes of a serie, maybe the genre changed from horror to romantical.
+---
+title: "Investigating the influence of genre preferences on movie/series rating patterns over time"
+---
 
 ## Research Motivation
+The entertainment industry is a dynamic industry. Consumer preferences continuously change, and new movies and series are continuously being produced. Genre continues to be an important topic in the entertainment industry. Genre preferences indicate what consumers liked to watch in the past, and therefore probably also would like to watch in the future. Thus, genre can serve as a selection criteria, based on which consumers decide whether to watch a certain movie or not. Therefore, an understanding of genre preferences gives movie producers a direction on what type of genre they should adopt to increase chances of success and to best deliver the message they want to bring across. Consequently, it is important to investigate the evolution of consumers’ genre preferences over time, which will be done in the current repository. 
 
-## How to get started
+## Method and results
+This repository investigates what the influence of consumers' genre preference is on the ratings consumers give movies and series over time. This is done using five datasets containing movie data. First, these datasets are merged, inspected, and cleaned. Next, the data is analyzed  using regression analysis. Consumers' movie/serie ratings (averageRatings) serve as the dependent variable. Consequently, the explanatory variables are regressed on averageRatings. The explanatory variables are: 
 
+* Genre
+* Series vs Movies 
+* Running Time 
+* Director 
+* Adult title vs non-adult title
+* Date
 
-## How to run the Workflow
-Open your command line tool:
+To improve the reliability of our results, a cut off based on the number of votes on the movies and series will be used. Since the dependent variable is *average* ratings, movies/series with only a few votes may receive more extreme average ratings. This can be the case because each rating, including the extreme ones, receives more weight when calculating the average, simply because there are only a few ratings. So, the average ratings may be more extreme, causing to skew the overall results. Therefore, movies/series receiving a number of votes that are below the cut off won't be included in the regression analysis. 
 
-* Check whether your present working directory is xyz-workflow by typing pwd in terminal
-  if not, type cd yourpath/xyz to change your directory to xyz
-* Type make in the command line.
+## Repository overview
 
-## Directory Structure
 ├── data
 ├── gen
 │   ├── analysis
@@ -57,13 +40,10 @@ Open your command line tool:
 │   │   │   └── table
 │   │   └── temp
 │   └── paper
-│       ├── input
-│       ├── output
-│       └── temp
 └── src
     ├── analysis
-    ├── data_preparation
-    └── paper
+    ├── Getting_the_Data
+    └── Data_Prep
     
 * gen: all generated files such as tables, figures, logs.
   - Three parts: data_preparation, analysis, and paper.
@@ -73,10 +53,18 @@ Open your command line tool:
   - input: put all temporary input files
 * data: all raw data.
 * src: all source codes.
-  -Three parts: data_preparation, analysis, and paper (including tex files).
+  -Three parts: Getting_the_Data, Data_Prep, and analysis.
+
+## How to get started
+
+## How to run the Workflow
+Open your command line tool:
+
+* Check whether your present working directory is xyz-workflow by typing pwd in terminal
+  if not, type cd yourpath/xyz to change your directory to xyz
+* Type make in the command line.
 
 ## Authors
-
 Timo Philipse            timophilipse 
 Bram Teunissen           bwg_teunissen
 Rodrigo Pačeko Rudzājs   rprudzajs
