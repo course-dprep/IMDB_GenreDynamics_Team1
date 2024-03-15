@@ -30,7 +30,6 @@ library(pdftools)
 Let's start with loading the data 
 ```{ r input}
 mdc <- read_csv("movie_data_cleaned.csv")
-
 ```
 
 ## basic skeleton model
@@ -39,7 +38,7 @@ Let's start with a simple skeleton model and build it from there in gradual step
 ```{r skeleton model}
 
 simple_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news,
-                      data = movie_data_test,
+                      data = mdc,
                       split = ~ slide_window_5)
 summary(simple_model)
 
@@ -52,7 +51,7 @@ We are observing behavior over time. But we are currently observing behavior for
 
 ```{r}
 fixed_type_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
-                                data = movie_data_test,
+                                data = mdc,
                                 split = ~ slide_window_5)
 
 summary(fixed_type_model)
@@ -79,7 +78,7 @@ Next one we want to capture some unobservable effects that are know to the rater
 
 ```{r}
 fixed_tt_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
-                                data = movie_data_test,
+                                data = mdc,
                                 split = ~ slide_window_5)
 
 
@@ -88,16 +87,19 @@ Last, because while out regression assumptions are mostly respected we still may
 
 ```{r assumptions}
 
-fixed_tt_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType ,
+fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType ,
                                 vcov = "hetero",
-                                data = movie_data_test,
+                                data = mdc,
                                 split = ~ slide_window_5)
 
-etable(fixed_tt_model)
+etable(fixed_tth_model)
 ```
 Good this has a small but positive effect. Now we want to plot the results.
 
 ```{r plotting results}
-?etable()
+
+#make a plot that suits 
+
+
 ```
 

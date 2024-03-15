@@ -28,27 +28,26 @@ mdc <- read_csv("movie_data_cleaned.csv")
 
 
 #let's start with the most basic skeleton
-
-simple_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news,
-                      data = movie_data_test,
-                      split = ~ slide_window_5)
-etable(simple_model)
-
-
-
-#let's add some fixed effects for type movie vs. series
 fixed_type_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
-                                data = movie_data_test,
-                                split = ~ slide_window_5)
-
-etable(fixed_type_model)
-
-#now we add some title specific effects that capture inherent information we may not know changes
-fixed_type_model <- feols(averageRating ~ numVotes + drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
-                          cluster = ~ titleType,
-                          data = movie_data_test,
+                          data = mdc,
                           split = ~ slide_window_5)
 
 summary(fixed_type_model)
+
+
+#now we add some fixed effects that capture inherent information we may not know changes
+fixed_tt_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
+                        data = mdc,
+                        split = ~ slide_window_5)
+
+summary(fixed_tt_model)
+
+#adjust model to the current assumptions
+fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType ,
+                        vcov = "hetero",
+                        data = mdc,
+                        split = ~ slide_window_5)
+
+etable(fixed_tth_model)
 
 
