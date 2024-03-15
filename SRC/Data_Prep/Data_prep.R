@@ -1,4 +1,5 @@
 install.packages("tidyverse")
+
 install.packages("tidyr")
 install.packages("dplyr")
 install.packages("stringr")
@@ -61,3 +62,4 @@ movie_data_test <- movie_data %>%
 
 #output save
 write_csv(movie_data, "movie_data_cleaned.csv")
+
