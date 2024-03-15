@@ -14,19 +14,112 @@ In this paper we aim to answer the following research question:
 **How do consumers' movie genre preferences change over time?**
 
 ## Research method
-In this paper we investigate consumers’ movie and series preferences using five datasets containing movie data. First, these datasets are merged, inspected, and cleaned Next, the data is analyzed  using regression analysis. Consumers' movie/serie ratings (averageRatings) serve as the dependent variable. Consequently, the explanatory variables are regressed on averageRatings. The explanatory variables are: 
+In this paper we investigate consumers’ movie and series preferences using five of IMDb's datasets containing movie data. First, these datasets are loaded, cleaned, inspected, merged and cleaned. Next, the data is analyzed using a regression analysis. This regression analysis regresses all movie and serie genre's against the average rating's over a period of 5 years. Additionally, the variables title, movieType and time are used as control variables to improve the interpret ability of the estimates.
 
-* Genre
-* Series vs Movies 
-* Running Time 
-* Director 
-* Adult title vs non-adult title
-* Date
+```{r message=FALSE, warning=FALSE}
+my_data <- data.frame(
+  Name = c("Average Rating", "Genre Types", "titleType", "Title", "5 Year Window"),
+  Contents = c("The average rating on IMBd per title of a given movie or series", "Genre Types is cluster for all 26 genre dummies that contain the value 1 if the movie or serie contains that genre and otherwise 0", "This variable indicated whether a title is a movie or a series", "the title is the given title of any unique movie or series", "The 5 year windown (or ' slide_window_5' indicates between what 5 year windown a movie or series belongs to. For example a movie from 2003 belong to 2000-2004")
+)
 
-To improve the reliability of our results, a cut off based on the number of votes on the movies and series will be used. Since the dependent variable is **average** ratings, movies/series with only a few votes may receive more extreme average ratings. This can be the case because each rating, including the extreme ones, receives more weight when calculating the average, simply because there are only a few ratings. So, the average ratings may be more extreme, causing to skew the overall results. Therefore, movies/series receiving a number of votes that are below the cut off won't be included in the regression analysis. 
+my_table <- kable(my_data, format = "html", escape = FALSE) %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(0, bold = TRUE) %>%
+  column_spec(1, width = "15%")  # Adjust the width of the first column as needed
+
+# Print the table
+print(my_table)
+```
+
+
+### Average Movie Rating
+The average IMBd rating is used as the outcome variable for the analysis. However this average rating is influenced by the number of votes that compile this average. This can be the case because each rating, including the extreme ones, receives more weight when calculating the average, simply because there are only a few ratings. So, the average ratings may be more extreme, causing to skew the overall results. Therefore, movies/series receiving a number of votes that are below the cut off of a hundred will not be included in the regression analysis. 
+
+### Genres
+Genres are used as the explanatory variable in the analysis. However, because they are nested within the original data set the are first un-nested and then pivoted wider. As a result a data with 27 dummies was constructed that could assessed separately in the analysis. 
+
+### Fixed Effects
+Given that the measurement of genre preferences over time is a construct that is viable to many unobserables, fixed effects were added to partially capture these unobservant. More specifically the type of title (movie vs. series) and title were added. To give an example, it could be that for movies, people prefer something with a little more drama that they would for a series or vice-versa. 
+
+A point of concern however, is that these average ratings are not measured over time but are a fixed sum up to and including the data of analysis. This means that if series fall out of favor and their rating drops this remains unobservant. Given that the continuation of series is determined by their success (a second season is not produced if the first one was a flop) the following assumption can be made: if a genre is not preffered throughout the continuance of a series, the rating is low in the starting year and thus unlikely to be significant.
+
+### capturing prefferences over time
+Last to actually see how preferences change over time we build on the assumption that if a movie or series is a success they gain many positive rating in the beginning and less so over time. As a result there is a peak during (first season) release, and allows us to only use the startYear as a means to calculate behavior over time. Yet, the individual year are unlikely to have a remarkable effect on the genre prefference trends This is because the effects are so nuanced that they are unlikely to be detected. Therefore, to solve this a five year window was created that captures all genre prefferences for that period of time
+
+### assumption
+All assumption associated with regression were checked via a visual inspection. Only linearity appeared to be satisfied.
+
+```{r Normality, echo=FALSE, warning=FALSE}
+movie_data <- read_csv(movie_data_cleaned)
+ggplot(movie_data, aes(x = slide_window_5, y = averageRating, fill=genres)) +
+  geom_point() +
+  facet_wrap(~genres)
+
+```
+While homoskedacity and independence appeared to be moderate at best.
+
+```{r Independence, echo=FALSE}
+# Calculate residuals
+residuals <- movie_data$averageRating - mean(movie_data$averageRating)
+
+# Create a sequence of indices
+indices <- seq_along(residuals)
+
+# Create a data frame for plotting
+plot_data <- data.frame(Index = indices, Residuals = residuals)
+
+# Plot residuals versus index
+ggplot(plot_data, aes(x = Index, y = Residuals, fill= "green")) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +  
+  labs(x = "Index", y = "Residuals") +  
+  ggtitle("Residuals vs. Index")
+```
+
+```{r Homosk, echo=FALSE}
+residuals <- movie_data$averageRating - mean(movie_data$averageRating)
+fitted_values <- movie_data$averageRating
+
+# Create a data frame for plotting
+plot_data <- data.frame(Fitted_Values = fitted_values, Residuals = residuals)
+
+# Plot residuals versus fitted values
+ggplot(plot_data, aes(x = Fitted_Values, y = Residuals)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +  # Add a smooth line to visualize any patterns
+  labs(x = "Fitted Values", y = "Residuals") +  # Add axis labels
+  ggtitle("Residuals vs. Fitted Values")  # Add a plot title
+```
+
+Linearity appared to be violated the most with a widening trend for all genres as the years evolved.
+
+```{r linearity, echo=FALSE}
+ggplot(movie_data, aes(x = slide_window_5, y = averageRating, fill=genres)) +
+  geom_point() +
+  facet_wrap(~genres)
+````
+
+Regardless of these results the decision was made to continue with the analysis. This is because the r package fixest allows for modification in the mixed model analysis that help overcome these limitations. For example, the package allows for clustering of different groups of residuals. While this does not entirely mitigate the assumption concerns it does help with them.
+
 
 ## Results
 
-## Discussion & conclusion
 
+## Discussion
+The results of this analysis can be interpreted as correlation given the vast amount of assumptions. While this has been partially mitigated by loosening some of the underlying assumptions the fact remains that these appears trend observations. 
 
+Ths research can be extended in 3 distinct ways.
+
+First, researchers may want to make use of dynamic review data that is not an accumulation of a point in time. Currently the sole measure of the average reviews resulted in two major assumptions in the analysis. The first assumption refers to series and franchise continuation. E.g., if the first film or series was not successful there is no follow up. And the second assumption refers to fact that the year window is based on the startYear of the movie and series. By looking at dynamic data researchers can also observe if genres fall out of favor in specific conditions. For example, as the series continue do people tire of the interpretation of the genre or is the genre in general less popular? 
+
+Second, researchers may benefit by including data from multiple sources. Currently the analysis is limited to IMBd data but there are also other sources such as rottentomato's for example. By combining these data sets the interpretation of the results become less bias by the data platform. For example, it may be that people of higher age groups typically review on IMBd and younger groups adopted commentator's. By broadening the data sources the generalization of the results increase.
+
+Last, researchers may benefit by including additional control variables such as gdp and reported population happiness scales. Given that the movie and series market is an indulgent market it may be that genres did not fall out of favor but that people could not afford to watch movies and series. Or it may be that there were other matters stirring in the population which made them more happy or sad. These factors influence consumption patterns and thus ratings. By broadening the scope of the analysis result become more reliable.
+
+# Conclusion
+This research illustrates that consumer reported genre preferences appear to change over time. Yet, further research is required to analyse the exact depth of these preferences and their generalizability.
+
+Overall, the genres crime, action, and animation appear to be favored across time. Additionally, the genre comedy fell in favor while the genre aventure and sci-fi appeared to experience peak year during . In constract the genres x y and z fell out of favor. 
+
+git mv old_file.txt new_file.txt
+git commit -m "Rename file from old_file.txt to new_file.txt"
