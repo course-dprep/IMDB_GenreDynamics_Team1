@@ -1,3 +1,4 @@
+
 # Cleaning the Data
 So after retrieving and mergig our data directly form the IMBD site, we now need to chcek and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
 
