@@ -65,8 +65,8 @@ Open your command line tool:
 * Type make in the command line.
 
 ## Authors
-Timo Philipse             timophilipse
-Bram Teunissen            bwg-teunissen
-Rodrigo Pačeko Rudzājs    rprudzajs
-Dian de Ridder            Ciertje
-Linda van den Boogaart    lindavdboogaart
+Timo Philipse            timophilipse 
+Bram Teunissen           bwg_teunissen
+Rodrigo Pačeko Rudzājs   rprudzajs
+Dian de Ridder           Ciertje
+Linda van den Boogaart   lindavdboogaart 	
