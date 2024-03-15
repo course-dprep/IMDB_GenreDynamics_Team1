@@ -1,28 +1,29 @@
-#Now let's think about some operalization basics. Or more specifically, the operalization of our variables.
+install.packages("tidyverse")
+library(tidyverse)
 
-#starting with out DV: ratings
-print(summary(movie_data$averageRating))
+movie_data <- read_csv("movie_data.csv")
 
-#Okay. So the scale is okay BUT remember that these are AVERAGE ratings, and that on average ratings 1 and 10 are quite extreem and frankly, unrealistic.
-#let's visualize how ratings are distributed
+movie_data <- movie_data %>%
+  mutate(across(c(tconst, directors, writers, titleType, isAdult,genres, parentTconst,isOriginalTitle), as.factor)) %>%
+  mutate(across(c(averageRating,numVotes,runtimeMinutes, title,seasonNumber, episodeNumber), as.numeric)) %>%
+  mutate(across(c(primaryTitle, originalTitle,types, attributes),as.string))
 
-ggplot(movie_data), aes(x = averageRating)) +
-  geom_histogram(binwidth = 1, fill = "darkorange", color = "black") +
-  labs(title = "Distribution of averageRating",
-       x = "Average Rating",y = "Frequency") +
-  scale_x_continuous(breaks = seq(0, 10, by = 1)) +  
-  theme_minimal()
+movie_data <- movie_data %>% filter(numVotes> 100) %>%
+  filter(isOriginalTitle== 1) %>%
+  distinct(primaryTitle, .keep_all = TRUE) 
 
-ggplot(movie_data, aes(x = averageRating)) +
-  geom_histogram(binwidth = 0.1, fill = "orange", color = "black") +
-  scale_x_continuous(breaks = seq(0, 10, by = 0.5), limits = c(0, 10), labels = scales::number_format(accuracy = 0.1)) +
-  labs(x = "averageRating", y = "Frequency") +
-  theme_minimal()
+movie_data<- movie_data %>% filter(titleType %in% c("movie", "tvMovie", "tvMiniSeries", "tvSeries"))
 
-#as you can see there appears to be a normal distribution that is slightly skewed to the left.
-#If you think logically about this this may be a result from the number of reviews given as opposed to the actual rating
+movie_data <- movie_data %>% mutate(movie_dummy= ifelse(str_detect(titleType,regex("movie", ignore_case = TRUE)), 1, 0))
+movie_data <- movie_data %>% mutate(newfilm_dummy= ifelse(startYear> 1999, 1, 0))
+movie_data <- movie_data %>% mutate(above_avg= ifelse(averageRating> mean(averageRating), 1, 0))
+movie_data <- movie_data %>% mutate(drama_dummy= ifelse(str_detect(genres,regex("drama", ignore_case = TRUE)), 1, 0))
+sum(movie_data$drama_dummy)
+movie_data <- subset(movie_data, select = c( -attributes, -ordering, -region, -language, -isOriginalTitle, -parentTconst, -episodeNumber, -seasonNumber, -title, -originalTitle))
+movie_data <- select(movie_data, tconst, primaryTitle, everything())
 
-print(summary(movie_data$numVotes))
+
+
 
 #do you see how tha average movie only has 106 votes? Or even 5! that will defiantely influence the average 
 ggplot(movie_data, aes(x = numVotes)) +
@@ -44,3 +45,4 @@ ggplot(below_100, aes(x = numVotes)) +
   labs(title = "Distribution of numVotes Below 100",
        x = "Group (Interval of 10)", y = "Number of Votes") +
   theme_minimal()
+
