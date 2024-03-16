@@ -7,7 +7,6 @@ Data_Source <- list(
   "https://datasets.imdbws.com/title.ratings.tsv.gz",
   "https://datasets.imdbws.com/title.episode.tsv.gz",
   "https://datasets.imdbws.com/title.akas.tsv.gz",
-  "https://datasets.imdbws.com/title.crew.tsv.gz",
   "https://datasets.imdbws.com/title.basics.tsv.gz"
 )
 
@@ -18,7 +17,6 @@ for (url in Data_Source) {
         assign(file_name, read_tsv(file_name)) # Read the downloaded file into R
         file.remove(file_name) # Remove the downloaded file
 }
-
 
 #let's merge some datasets! 
 #Please take a close look at all the data sets. Do you see how they all have a label 'tconst"? that is awesome because it allows us to merge the data sets.
@@ -36,11 +34,11 @@ episodes <- episodes %>%
 #Data_set <- left_join(ratings, basics, by = "tconst")
 #while this was nice, we need a larger scale operalization.
 
-data_sets <- list(ratings, crew, basics, episode, akas)
+data_sets <- list(ratings, basics, episode, akas)
 join_column <- "tconst"
 movie_data <- Reduce(function(x, y) left_join(x, y, by = join_column), data_sets)
 
 #Awesome! Now we have running code that builds an entire dataframe from seperate ones.
 
 #now let's store the data
-write_csv(movie_data, "movie_data.csv")
+write_csv(movie_data, "src/data_prep/movie_data.csv")
