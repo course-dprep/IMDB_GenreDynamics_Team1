@@ -103,6 +103,10 @@ Regardless of these results the decision was made to continue with the analysis.
 
 
 ## Results
+The results indicated that there are different genre preferences over time.
+Out of all twenty five genres, only aighteen appeared to significantly influence the average ratings on IMBd. These genres were animation, biography, film-noir, fanatsy, documentary, crime, comedy, game-show, history, horror, musical, shorts, sci-fi, romance, reality-tv, news, and war.
+
+The genre history fell in favor in around the year 1960 and continued to significantly (p~1960<.01) influence the average rating until this day.
 
 
 ## Discussion
@@ -121,5 +125,3 @@ This research illustrates that consumer reported genre preferences appear to cha
 
 Overall, the genres crime, action, and animation appear to be favored across time. Additionally, the genre comedy fell in favor while the genre aventure and sci-fi appeared to experience peak year during . In constract the genres x y and z fell out of favor. 
 
-git mv old_file.txt new_file.txt
-git commit -m "Rename file from old_file.txt to new_file.txt"
