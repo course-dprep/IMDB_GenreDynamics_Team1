@@ -1,8 +1,7 @@
 # Let's run our analysis! 
 ## And see how genre prefferences as inferred from average ratings evolve over time
 
-```{r libraries, message=FALSE, warning=FALSE}
-
+```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
 install.packages("tidyverse")
 install.packages("fixest")
 install.packages("tidyr")
@@ -28,28 +27,26 @@ library(pdftools)
 ```
 
 Let's start with loading the data 
-```{ r input}
-mdc <- read_csv("movie_data_cleaned.csv")
+```{r include=FALSE}
+mdc <- read_csv("../data_prep/movie_data_cleaned.csv")
 ```
 
 ## basic skeleton model
-Let's start with a simple skeleton model and build it from there in gradual steps.So the most basic form is start regression all our genres on the average rating. So let's do that!
+Let's start with a simple skeleton model and build it from there in gradual steps. So the most basic form is to start regressing all our genres on the average rating. So let's do that!
 
-```{r skeleton model}
-
+```{r skeleton model, echo=FALSE}
 simple_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news,
                       data = mdc,
                       split = ~ slide_window_5)
 summary(simple_model)
-
 ```
-So we now have the most basic form of a regression to work with. If you click around a bit you see that within the 5 year time windows some genres become signficant, others stay signficant and some become insignificant. However, this is the most basic form of a regression and correlational at best. Therefore we are going to extent this formula a bit and see how it evolves to something that may become a litlle more causal.
+So we now have the most basic form of a regression to work with. If you click around a bit you see that within the 5 year time windows some genres become significant, others stay significant and some become insignificant. However, this is the most basic form of a regression and correlational at best. Therefore we are going to extent this formula a bit and see how it evolves to something that may become a little more causal.
 
 ## adding fixed effects
 ### titleType
 We are observing behavior over time. But we are currently observing behavior for multiple types of behavior. Or more speicifally, for both movies AND series. But these are two different things. So while we still want to know the general genre prefference trends, we need to adjust for movie vs. series. 
 
-```{r}
+```{r echo=FALSE}
 fixed_type_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
                                 data = mdc,
                                 split = ~ slide_window_5)
@@ -60,15 +57,12 @@ summary(fixed_type_model)
 
 If you compare these results against our skeleton model you may see that the standard errors have increased. This is good! this means our analysis has become a little more robust. But let's check our r-sqaured to be sure.
 
-```{r}
-
+```{r echo=FALSE}
 etable(simple_model)
-
 ```
 
-```{r}
+```{r echo=FALSE}
 etable(fixed_type_model)
-
 ```
 
 Good most of our r-sqaures are improving. This means this added fixed effects was a good one. 
@@ -76,16 +70,15 @@ Good most of our r-sqaures are improving. This means this added fixed effects wa
 ### title of movie vs. serie
 Next one we want to capture some unobservable effects that are know to the raters but unknown to us. For example, script, plot and actor quality. But also things like music and other elements captured in the series that are outside of the data set.
 
-```{r}
+```{r include=FALSE}
 fixed_tt_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
                                 data = mdc,
                                 split = ~ slide_window_5)
-
-
 ```
+
 Last, because while out regression assumptions are mostly respected we still may want to increase the robustness of the coefficients. We do this by loosening these assumptions a little, given that hetroskedacity appears to be a little shady we loosen that assumption a little and then check the r sqaured again.
 
-```{r assumptions}
+```{r assumptions, echo=FALSE}
 
 fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType ,
                                 vcov = "hetero",
@@ -94,6 +87,7 @@ fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thrille
 
 etable(fixed_tth_model)
 ```
+
 Good this has a small but positive effect. Now we want to plot the results.
 
 ```{r plotting results}

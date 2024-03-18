@@ -23,7 +23,7 @@ library(estimatr)
 library(stargazer)
 
 #input
-mdc <- read_csv("movie_data_cleaned.csv")
+mdc <- read_csv("src/data_prep/movie_data_cleaned.csv")
 
 
 
@@ -49,5 +49,20 @@ fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thrille
                         split = ~ slide_window_5)
 
 etable(fixed_tth_model)
+#################################################################################
+
+# Create a list named "genres"
+genres <- list(
+  "drama", "romance", "war", "crime", "thriller",
+  "history", "comedy", "fantasy", "adventure", "mystery",
+  "biography", "action", "scifi", "western", "horror",
+  "sport", "documentary", "musical", "filmnoir", "animation",
+  "adult", "gameshow", "realitytv", "talkshow", "short", "news"
+)
+
+
+coefplot(fixed_tth_model)
+
+
 
 

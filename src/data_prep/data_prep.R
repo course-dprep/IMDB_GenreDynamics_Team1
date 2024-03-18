@@ -1,28 +1,31 @@
 install.packages("tidyverse")
-
 install.packages("tidyr")
 install.packages("dplyr")
 install.packages("stringr")
+
 library(tidyverse)
 library(tidyr)
 library(dplyr)
 library(stringr)
 
 #input
-movie_data <- read_csv("movie_data.csv")
+movie_data <- read_csv("src/data_prep/movie_data.csv")
 
-#clean raw 
+#clean raw data
 movie_data <- movie_data %>%
-  mutate(across(c(tconst, directors, writers, titleType, isAdult,genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
+  mutate(across(c(tconst, titleType, isAdult, genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
   mutate(across(c(averageRating,numVotes,runtimeMinutes, title, seasonNumber, episodeNumber), as.numeric)) 
 
+#filter on original title
 movie_data <- movie_data %>% filter(numVotes> 100) %>%
   filter(isOriginalTitle== 1) %>%
   distinct(primaryTitle, .keep_all = TRUE) 
 
+#filter for movies and series
 movie_data<- movie_data %>% 
   filter(titleType %in% c("movie", "tvMovie", "tvMiniSeries", "tvSeries"))
 
+#reformat columns and drop irrelevant ones
 movie_data <- movie_data %>%
   mutate(movie_dummy = ifelse(str_detect(titleType, regex("movie", ignore_case = TRUE)), 1, 0),
          newfilm_dummy = ifelse(startYear > 1999, 1, 0),
@@ -49,17 +52,19 @@ slide_window <- movie_data %>%
   count()
 
 #pivor the data wide for a more smooth analysis
-movie_data_test <- movie_data %>%
+movie_data <- movie_data %>%
   mutate(genres = tolower(genres)) %>%
   separate_rows(genres, sep = ",") %>%
   mutate(genre_dummy = 1) %>%
   pivot_wider(names_from = genres, values_from = genre_dummy, values_fill = list(genre_dummy = 0)) %>%
-  rename(scifi = `sci-fi`) %>%
-  rename(filmnoir = `film-noir`) %>%
-  rename(gameshow = `game-show`) %>%
-  rename(realitytv = `reality-tv`) %>%
-  rename(talkshow = `talk-show`)
+  rename(
+    scifi = `sci-fi`,
+    filmnoir = `film-noir`,
+    gameshow = `game-show`,
+    realitytv = `reality-tv`,
+    talkshow = `talk-show`
+  )
 
 #output save
-write_csv(movie_data, "movie_data_cleaned.csv")
+write_csv(movie_data, "src/data_prep/movie_data_cleaned.csv")
 
