@@ -9,6 +9,7 @@ install.packages("modelsummary")
 install.packages("broom")
 install.packages("purrr")
 install.packages("estmatr")
+install.packages("stargazer")
 
 library(tidyverse)
 library(fixest)
