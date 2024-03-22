@@ -181,7 +181,7 @@ plot_data <- data.frame(Fitted_Values = fitted_values, Residuals = residuals)
 # Plot residuals versus fitted values
 ggplot(plot_data, aes(x = Fitted_Values, y = Residuals)) +
   geom_point() +
-  geom_smooth(method = "loess", se = FALSE) +  patterns
+  geom_smooth(method = "loess", se = FALSE) + 
   labs(x = "Fitted Values", y = "Residuals") +  
   ggtitle("Residuals vs. Fitted Values")  
 ```
