@@ -2,11 +2,6 @@
 So after retrieving and mergig our data directly form the IMBD site, we now need to check and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
 
 ```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
-install.packages("tidyverse")
-install.packages("tidyr")
-install.packages("dplyr")
-install.packages("stringr")
-
 library(tidyverse)
 library(tidyr)
 library(dplyr)
@@ -186,7 +181,7 @@ plot_data <- data.frame(Fitted_Values = fitted_values, Residuals = residuals)
 # Plot residuals versus fitted values
 ggplot(plot_data, aes(x = Fitted_Values, y = Residuals)) +
   geom_point() +
-  geom_smooth(method = "loess", se = FALSE) +  patterns
+  geom_smooth(method = "loess", se = FALSE) + 
   labs(x = "Fitted Values", y = "Residuals") +  
   ggtitle("Residuals vs. Fitted Values")  
 ```
@@ -217,7 +212,7 @@ Linearity looks chaotic but okay. It may be a little smaller on the left and inc
 ggplot(movie_data, aes(x = slide_window_5, y = averageRating)) +
   geom_point() +
   facet_wrap(~genres)
-````
+```
 
 Okay well that not real linear. There is some trend though. So we are going to continue with out analysis. 
 
