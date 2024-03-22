@@ -1,15 +1,6 @@
 #In this file perform the analysis on the cleaned data from SRC/Data_Prep/Data_prep.R
 
-install.packages("tidyverse")
-install.packages("fixest")
-install.packages("tidyr")
-install.packages("skimr")
-install.packages("infer")
-install.packages("modelsummary")
-install.packages("broom")
-install.packages("purrr")
-install.packages("estmatr")
-
+# Loading packages
 library(tidyverse)
 library(fixest)
 library(tidyr)
@@ -24,7 +15,6 @@ library(stargazer)
 
 #input
 mdc <- read_csv("src/data_prep/movie_data_cleaned.csv")
-
 
 
 #let's start with the most basic skeleton

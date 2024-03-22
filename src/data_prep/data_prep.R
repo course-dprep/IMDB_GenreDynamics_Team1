@@ -1,8 +1,4 @@
-install.packages("tidyverse")
-install.packages("tidyr")
-install.packages("dplyr")
-install.packages("stringr")
-
+# Loading packages
 library(tidyverse)
 library(tidyr)
 library(dplyr)
