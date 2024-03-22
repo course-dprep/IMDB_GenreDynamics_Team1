@@ -26,7 +26,7 @@ akas <- akas %>%
   mutate(tconst = titleId) %>%
   select(-titleId)
 
-episodes <- episodes %>%
+episode <- episode %>%
   mutate(across(episodeNumber, as.numeric)) %>% 
   mutate(across(seasonNumber, as.numeric))
 
@@ -42,3 +42,4 @@ movie_data <- Reduce(function(x, y) left_join(x, y, by = join_column), data_sets
 
 #now let's store the data
 write_csv(movie_data, "src/data_prep/movie_data.csv")
+
