@@ -6,6 +6,7 @@ src/data_prep/movie_data.csv: src/data_prep/Getting_the_Data.R
 
 src/data_prep/movie_data_cleaned.csv: src/data_prep/movie_data.csv src/data_prep/Data_prep.R
 	R --vanilla < src/data_prep/Data_prep.R
+
 	
 src/analysis/regression_analysis.pdf: src/data_prep/movie_data_cleaned.csv src/analysis/regression_analysis.R
 	R --vanilla < src/analysis/regression_analysis.R

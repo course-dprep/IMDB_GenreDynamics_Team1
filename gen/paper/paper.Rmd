@@ -1,0 +1,253 @@
+---
+title: Investigating the influence of genre preferences on movie/series rating patterns
+  over time
+author: "Team 1 - Timo Philipse, Bram Teunissen, Rodrigo Pačeko Rudzājs, Dian de Ridder
+  & Linda van den Boogaart"
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+# Research motivation
+
+The entertainment industry is a dynamic industry. Consumer preferences
+continuously change, and new movies and series are continuously being
+produced. Genre continues to be an important topic in the entertainment
+industry. Genre preferences indicate what consumers liked to watch in
+the past, and therefore probably also would like to watch in the future.
+Thus, genre can serve as a selection criteria, based on which consumers
+decide whether to watch a certain movie or not. Therefore, an
+understanding of genre preferences gives movie producers a direction on
+what type of genre they should adopt to increase chances of success and
+to best deliver the message they want to bring across. Consequently, it
+is important to investigate the evolution of consumers’ genre
+preferences over time.
+
+## Research question
+
+In this paper we aim to answer the following research question:
+
+**How do consumers' movie genre preferences change over time?**
+
+## Research method
+
+In this paper we investigate consumers’ movie and series preferences
+using four of IMDb's datasets containing movie data. First, these
+datasets are loaded, inspected, merged and cleaned. Next, the
+data is analyzed using a regression analysis. This regression analysis
+regresses all movie and series genres against the average ratings over
+a period of 5 years. Additionally, the variables title, movieType and
+time are used as control variables to improve the interpretability of
+the estimates.
+
+| Name of Variable | Contents of Variable                                                                                                                                             | Used as .. in Analysis |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| Average Rating   | The average rating on IMBd per title of a given movie or series.                                                                                                 | Dependent Variable     |
+| Genre Types      | Genre Types is a cluster for all 26 genre dummies that contain the value 1 if the movie or series contains that genre and otherwise 0.                           | Independent Variable   |
+| titleType        | This variable indicates whether a title is a movie or a series.                                                                                                  | Fixed Effect           |
+| Title            | The title is the given title of any unique movie or series                                                                                                       | Fixed Effect           |
+| 5 Year Window    | The 5 year windown (or ' slide_window_5' indicates between what 5 year window a movie or series belongs to. For example a movie from 2003 belonging to 2000-2004 | Split Varible          |
+
+### Average Movie Rating
+
+The average IMBd rating is used as the outcome variable for the
+analysis. However, this average rating is influenced by the number of
+votes that compile this average. This can be the case because each
+rating, including the extreme ones, receives more weight when
+calculating the average, simply because there are only a few ratings.
+So, the average ratings may be more extreme, causing to skew the overall
+results. Therefore, movies/series receiving a number of votes below the
+cut-off of a hundred will not be included in the regression analysis.
+
+### Genres
+
+Genres are used as the explanatory variable in the analysis. However,
+because they are nested within the original data set they are first
+un-nested and then pivoted wider. As a result data with 27 dummies was
+constructed that could be assessed separately in the analysis.
+
+### Fixed Effects
+
+Given that the measurement of genre preferences over time is a construct
+that is viable to many unobservables, fixed effects were added to the 
+regression analysis to partially capture these unobservables. More 
+specifically the type of title (movie vs. series) and title were added. 
+To give an example, it could be that for movies people prefer something 
+with a little more drama than they would for a series or vice-versa.
+
+A point of concern, however, is that these average ratings are not
+measured over time but are a fixed sum up to and including the data of
+analysis. This means that if series fall out of favor and their rating
+drops this remains unobservant. Given that the continuation of a series
+is determined by its success (a second season is not produced if the
+first one was a flop) the following assumption can be made: if a genre
+is not preferred throughout the continuance of a series, the rating is
+low in the starting year and thus unlikely to be significant.
+Additionally, since IMDb was not around in 1925, average ratings for
+movies and series originating from that time may be strongly biased
+because a niche selection of the population may be watching these movies
+in the first place.
+
+### Capturing preferences over time
+
+Last, to see how preferences change over time we build on the assumption
+that if a movie or series is a success they gain many positive ratings
+in the beginning and less so over time. As a result, there is a peak
+during (the first season) release allowing us to only use the startYear
+as a means to calculate behavior over time. Yet, the individual years
+are unlikely to have a remarkable effect on the genre preference trends.
+This is because the effects are so nuanced that they are unlikely to be
+detected. Therefore, a five-year window was created that captures all 
+genre preferences for that period of time.
+
+### Assumption
+
+All assumptions associated with regression were checked via a visual
+inspection. Only linearity appeared to be satisfied.
+
+```{r Normality, echo=FALSE, warning=FALSE}
+#insert pdf
+
+```
+
+Homoscedasticity and independence appeared to be moderate at best.
+
+```{r}
+#insert pdf
+```
+
+Linearity appeared to be violated the most with a widening trend for all
+genres as the years evolved.
+
+```{r}
+#insert pdf
+```
+
+Regardless of these results the decision was made to continue with the
+analysis. This is because the R package `fixest` allows for modification
+in the mixed model analysis that helps overcome these limitations. For
+example, the package allows for clustering of different groups of
+residuals. While this does not entirely mitigate the assumption concerns
+it does help with them.
+
+## Results and Discussion
+```{r}
+#insert pdf of results graph with colored dots
+```
+
+The results indicated that there are different genre preferences over
+time. Out of all twenty-five genres, only eighteen appeared to
+significantly influence the average ratings on IMDb. These genres were
+animation, biography, film-noir, fantasy, documentary, crime, comedy,
+game-show, history, horror, musical, shorts, sci-fi, romance,
+reality-tv, news, and war.
+
+The genre history fell in favor in around the year 1960 and continued to
+significantly (p~1960-1964~\<.01) relate to the average rating until
+this day (p~2020-2024~ \<.001). While the genre film-noir stoped to
+significantly relate to the average ratings around the year 1950
+(p~1950-1954~=.06 , p~1955-1959~ =.49). The genres crime (p~2000-2004~
+\<.01,p~2005-2009~ \<.01), romance (p~1940-1944~ =.03, p~1945-1949~
+\<.01), horror (p~1925-1929~ =.04), game-show (p~2000-2004~ \<.01),
+reality-tv (p~1970-1974~ \<.01), sci-fi (p~1935-1939~ \<.01), and
+shorts (p~1995-1999~ \<.01, p~2005-2009~ \<.01) had a single period
+bursts where they significantly related to the average ratings. Last, the
+genres animation (p\~1940-1944 \<.01, p~1950-1954~ \<.01, p~1975-1979~
+\<.01 -up until 2024), biography (p~1935-1939~ \<.01, p~1985-1989~ \<.01
+-Up until 2024), comedy (p~1930-1934~ =.02, p~1950-1954~ =.04,
+p~1990-1994~ =.01), documentary (p~1930-1934~ \<.01, p\~1945-1949 \<.01,
+p\~1980-1984 \<.01 - up to and including p\~2015-2019 \<.01), fantasy
+(p~1930-1934~ \<.01, p~1935-1939~ \<.01, p~1945-1949~ \<.01,
+p~1970-1974~ =.03), musical (p~1960-1964~ =.09, p~1985-1989~ =.03,
+p~1990-1994~ =.02, p~2020-2024~\<.01), and war (p~1930-1934~ =.02,
+p~1945-1949~ \<.01, p~1960-1964~ =.04 up to and including p~1970-1974~
+\<.01, p~1985-1989~ \<.01 up to and including p~2005-2009~ \<.01)
+were significantly related to the average ratings in bursts with unrelated
+periods in between.
+
+A reason why genres such as animation, biography, and history are so
+often correlated with the average rating over time is because these
+genres hold very unique elements. For example, take romance. In romance,
+the plays and sequence of events are often set and fail to vary. A
+watcher often knows what is going to happen next and what it may look
+like. Controversially, the genres of animation, biography, and history
+contain more unique and unpredictable elements. For example, not every
+animated movie is Frozen or the Incredibles, the history of Egypt is not
+the same as that of Amelia Earhart or even Germany, and the story of
+Elton John is different from that of Justin Timberlake.
+
+For genres like war and film-noir the correlation could be a sign of the
+times, and can be strongly guided by biases in the rating population. For
+example, when the genre war was indicated to be significantly related to
+average ratings it was the time the Second World War and the Cold War
+were in full motion. Therefore people who have an interest in this topic
+may like to watch propaganda movies from that time. As a result, the
+average ratings are higher because a niche of interested people is
+watching. Similar to film-noir, people who are interested in this type
+of movie or series are watching these and rating them. Therefore, there
+may be a strong instance of viewer bias present.
+
+On the contrary, the genres action, adult, adventure, mystery, sport,
+thriller, and western are all insignificant and do not appear to be
+correlated to the average ratings on IMDb. A reason for this may be that
+these elements have become expected or core components of movies and
+series and therefore do not stand out. As a result, they may not
+correlate with the average rating as much as elements of a biography may
+do. It is not every day a movie or series is released that is based on
+true events.
+
+# Conclusion
+
+This research illustrates that genre preferences may be related to the
+average IMDb ratings and vary over time. While further research is
+necessary to fine-tune these claims the current research does provide
+insight into how raters' watch patterns appear to alter. For example, it
+shows that the common ingredients like romance and action may not stand
+out as much as biography and history might. 
+The results of this analysis can be, at best, interpreted as correlational 
+given the vast amount of assumptions and potential hidden dangers of 
+sampling biases (e.g., film-noir and war genres). While this has been 
+partially mitigated by loosening some of the underlying assumptions and 
+adding fixed effects, the fact remains that these appear as trend 
+observations. Therefore, the results do not necessarily conclude that some 
+genres lead to higher average ratings. However, the results do indicate that 
+there may be preferences over time that may lead to higher average ratings.
+
+## Extensions
+
+Yet, the investigation into these genres is only a starting point. Much
+more can be learned and investigated. Here are three ways in which the
+current research into how genres relate to average IMDb rating may be
+extended:
+
+First, researchers may want to make use of dynamic review data that is
+not an accumulation of a point in time. Currently, the sole measure of
+the average reviews resulted in two major assumptions in the analysis.
+The first assumption refers to series and franchise continuation. E.g.,
+if the first film or series was not successful there is no follow-up.
+And the second assumption refers to the fact that the year window is
+based on the startYear of the movie and series. By looking at dynamic
+data researchers can also observe if genres fall out of favor in
+specific conditions. For example, as the series continues do people tire
+of the interpretation of the genre, or is the genre in general less
+popular?
+
+Second, researchers may benefit by including data from multiple sources.
+Currently, the analysis is limited to IMDb data but there are also other
+sources such as Rotten Tomatoes for example. By combining these data sets
+the interpretation of the results becomes less biased by the data
+platform. For example, it may be that people of higher age groups
+typically review on IMDb, and younger groups adopt commentators. By
+broadening the data sources the generalization of the results increases.
+
+Last, researchers may benefit by including additional control variables
+such as GDP and reported population happiness scales. Given that the
+movie and series market is an indulgent market it may be that genres did
+not fall out of favor but that people could not afford to watch movies
+and series. Or it may be that other matters were stirring in the
+population which made them more happy or sad. These factors influence
+consumption patterns and thus ratings. By broadening the scope of the
+analysis results become more reliable.
