@@ -1,12 +1,7 @@
 # Cleaning the Data
-So after retrieving and mergig our data directly form the IMBD site, we now need to check and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
+So after retrieving and merging our data directly form the IMBD site, we now need to check and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
 
 ```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
-install.packages("tidyverse")
-install.packages("tidyr")
-install.packages("dplyr")
-install.packages("stringr")
-
 library(tidyverse)
 library(tidyr)
 library(dplyr)
@@ -21,7 +16,7 @@ movie_data <- movie_data %>%
   mutate(across(c(averageRating,numVotes,runtimeMinutes, title, seasonNumber, episodeNumber), as.numeric)) 
 ```
 
-First, let's think about some operalization basics. Or more specifically, the operalization of the variables.
+First, let's think about some operationalization basics. Or more specifically, the operationalization of the variables.
 
 ## starting with out DV: ratings
 ```{r Raw DV print, echo=FALSE}
@@ -174,7 +169,7 @@ ggplot(movie_data, aes(sample = averageRating, color = genres)) +
   facet_wrap(~genres)
 ```
 
-Okay, so it looks like there is some normal distribution. How about homoskedacity?
+Okay, so it looks like there is some normal distribution. How about homoscedasticity?
 
 ```{r echo=FALSE}
 residuals <- movie_data$averageRating - mean(movie_data$averageRating)
@@ -217,11 +212,11 @@ Linearity looks chaotic but okay. It may be a little smaller on the left and inc
 ggplot(movie_data, aes(x = slide_window_5, y = averageRating)) +
   geom_point() +
   facet_wrap(~genres)
-````
+```
 
-Okay well that not real linear. There is some trend though. So we are going to continue with out analysis. 
+Okay well that is not really linear. There is some trend though. So we are going to continue with our analysis. 
 
-However Let's clean the data set a little so each genre is a neat dummy. 
+However, let's clean the data set a little so each genre is a neat dummy. 
 
 ```{r include=FALSE}
 movie_data <- movie_data %>%
