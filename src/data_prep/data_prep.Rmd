@@ -9,7 +9,7 @@ library(stringr)
 ```
 
 ```{r reformatting the data, message=FALSE, warning=FALSE, include=FALSE}
-movie_data <- read_csv("movie_data.csv")
+movie_data <- read_csv("data/movie_data.csv")
 
 movie_data <- movie_data %>%
   mutate(across(c(tconst, titleType, isAdult,genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
@@ -235,6 +235,6 @@ movie_data <- movie_data %>%
 Don't leave before saving! 
 
 ```{r save file}
-write_csv(movie_data, "movie_data_cleaned.csv")
+write_csv(movie_data, "data/movie_data_cleaned.csv")
 ```
 
