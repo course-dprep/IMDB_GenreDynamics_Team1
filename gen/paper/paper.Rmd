@@ -45,15 +45,19 @@ the estimates.
 
 | Name of Variable | Contents of Variable                                                                                                                                             | Used as .. in Analysis |
 |------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
-| Average Rating   | The average rating on IMBd per title of a given movie or series.                                                                                                 | Dependent Variable     |
+| Average Rating   | The average rating on IMDb per title of a given movie or series.                                                                                                 | Dependent Variable     |
 | Genre Types      | Genre Types is a cluster for all 26 genre dummies that contain the value 1 if the movie or series contains that genre and otherwise 0.                           | Independent Variable   |
 | titleType        | This variable indicates whether a title is a movie or a series.                                                                                                  | Fixed Effect           |
 | Title            | The title is the given title of any unique movie or series                                                                                                       | Fixed Effect           |
-| 5 Year Window    | The 5 year windown (or ' slide_window_5' indicates between what 5 year window a movie or series belongs to. For example a movie from 2003 belonging to 2000-2004 | Split Varible          |
+| 5 Year Window    | The 5 year window (or ' slide_window_5' indicates between what 5 year window a movie or series belongs to. For example a movie from 2003 belonging to 2000-2004 | Split Variable          |
+
+### Descriptives
+The data set contains of 70087 films, of which 60246 are movies and 9841 are series.  These films have on average a rating of 6.3, with 10 being the highest and 1 being the lowest. After removing the votes to all being above 100, the average number of votes on a film became 7146. When looking at the years, the most amount of films were released on IMDb in 2019, with 2586 films. Also when comparing the 5 year range of films released,2015 to 2019 had the most films released, with 11353 films. Looking at the runtime of the films, on average a film is 101 minutes long.
+
 
 ### Average Movie Rating
 
-The average IMBd rating is used as the outcome variable for the
+The average IMDb rating is used as the outcome variable for the
 analysis. However, this average rating is influenced by the number of
 votes that compile this average. This can be the case because each
 rating, including the extreme ones, receives more weight when
@@ -102,6 +106,7 @@ are unlikely to have a remarkable effect on the genre preference trends.
 This is because the effects are so nuanced that they are unlikely to be
 detected. Therefore, a five-year window was created that captures all 
 genre preferences for that period of time.
+
 
 ### Assumption
 
