@@ -4,7 +4,7 @@ library(fixest)
 library(plotly)
 
 # Load graph data
-graph_data <- read_csv("graph_data.csv")
+graph_data <- read_csv("data/graph_data.csv")
 
 
 # Define UI
