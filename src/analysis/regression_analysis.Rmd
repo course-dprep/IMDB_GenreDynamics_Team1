@@ -126,6 +126,8 @@ Additionally, some genres are never significant, e.g., sports and thriller. Whil
 
 
 ```{r saving the doc}
+write_csv(graph_data, "../../data/graph_data.csv")
+
 render("../../src/analysis/regression_analysis.Rmd",
        output_format = "pdf_document",
        "../../gen/data_analysis/regression_analysis.pdf")
