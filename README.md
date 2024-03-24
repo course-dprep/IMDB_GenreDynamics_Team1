@@ -14,6 +14,8 @@ The results showed that 18 out of 25 genres influenced average ratings over time
 
 ## Repository overview
 
+Below you can find an overview of our repository structure. Currently, you will only see the 'src' folder. The other folders are created during the workflow.
+
 ```
 ├── data
 ├── gen
@@ -24,7 +26,7 @@ The results showed that 18 out of 25 genres influenced average ratings over time
 │   │   │   ├── log
 │   │   │   └── table
 │   │   └── temp
-│   ├── data_preparation
+│   ├── data_prep
 │   │   ├── audit
 │   │   │   ├── figure
 │   │   │   ├── log

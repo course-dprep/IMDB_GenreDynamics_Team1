@@ -1,5 +1,5 @@
 # Let's run our analysis! 
-## And see how genre prefferences as inferred from average ratings evolve over time
+## And see how genre preferences as inferred from average ratings evolve over time
 
 ```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
@@ -17,7 +17,7 @@ library(pdftools)
 
 Let's start with loading the data 
 ```{r include=FALSE}
-mdc <- read_csv("../data_prep/movie_data_cleaned.csv")
+mdc <- read_csv("../../data/movie_data_cleaned.csv")
 ```
 
 ## basic skeleton model
