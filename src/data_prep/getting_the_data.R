@@ -41,5 +41,6 @@ movie_data <- Reduce(function(x, y) left_join(x, y, by = join_column), data_sets
 #Awesome! Now we have running code that builds an entire dataframe from seperate ones.
 
 #now let's store the data
-write_csv(movie_data, "src/data_prep/movie_data.csv")
+dir.create("data")
+write_csv(movie_data, "data/movie_data.csv")
 

@@ -21,7 +21,7 @@ library(pdftools)
 
 Let's start with loading the data 
 ```{r include=FALSE}
-mdc <- read_csv("../data_prep/movie_data_cleaned.csv")
+mdc <- read_csv("data/movie_data_cleaned.csv")
 ```
 
 ## basic skeleton model

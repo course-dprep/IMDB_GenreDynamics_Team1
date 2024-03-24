@@ -9,7 +9,7 @@ library(stringr)
 ```
 
 ```{r reformatting the data, message=FALSE, warning=FALSE, include=FALSE}
-movie_data <- read_csv("movie_data.csv")
+movie_data <- read_csv("data/movie_data.csv")
 
 movie_data <- movie_data %>%
   mutate(across(c(tconst, titleType, isAdult,genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
@@ -18,11 +18,14 @@ movie_data <- movie_data %>%
 
 First, let's think about some operationalization basics. Or more specifically, the operationalization of the variables.
 
-## starting with out DV: ratings
+## starting with out DV: ratings variable are defined as averageRating and should be between 1 and 10.
 ```{r Raw DV print, echo=FALSE}
 print(summary(movie_data$averageRating))
 ```
 
+The mean of the averageRating variable is 6.6. 
+
+```{r DV scale, echo=FALSE}
 Okay. So the scale is okay BUT remember that these are AVERAGE ratings, and that on average ratings 1 and 10 are quite extreme and frankly, unrealistic.
 
 let's visualize how ratings are distributed
@@ -86,6 +89,7 @@ Let's filter these observations out now.
 movie_data <- movie_data %>%
   filter(numVotes > 100) 
 ```
+Now that we have filtered the number of votes of each film to be more than 100, Films now have on average 24500 votes.
 
 ## IV data_set
 
@@ -97,7 +101,9 @@ movie_data <- movie_data %>%
   distinct(primaryTitle, .keep_all = TRUE) 
 ```
 
-Next, we want to make sure we can differentiate between movie vs. series. This is because we are interested in genres, and those may be dependent on whether a title it is a movie or a series (e.g., news). But we also want to see if we can solve some missing values and drop some irrelevant columns about attributes. 
+Next, we want to make sure we can differentiate between movie vs. series. This is because we are interested in genres, and those may be dependent on whether a title it is a movie or a series (e.g., news). But we also want to see if we can solve some missing values and drop some irrelevant columns about attributes.
+
+We also have created a dummy variable called above_avg which indicates whether a film has a rating above or below average.
 
 ```{r include=FALSE}
 movie_data<- movie_data %>% 
@@ -114,6 +120,7 @@ movie_data <- movie_data %>%
   select(-all_of(drop_columns))
 
 ```
+After filtering to only series and movies, we end up with 120273 movies and 27722 series.
 
 We are interest in genre patterns over time. However, these patterns may change not as quickly as on a yearly basis. Therefore, we construct a window that captures 5 years of viewer patterns. Because we do not know how these averRating votes dynamicly evolve over time (for series), we assume that the yearStart is the year in which the most number of votes (numVotes) are generated. This is logical, because if the average rating is positive the series will be continued, and if the reviews are negative the series will be likely to be discontinued. How the rating drops as the perceived quality of the series drops over time, is for the purpose of this study, left out of the equation.
 
@@ -134,6 +141,8 @@ movie_data %>%
   group_by(slide_window_5) %>%
   count()
 ```
+We have filtered the data set to only include movies and series that have been released after 1925.
+
 
 Excellent, we now have a window time frame for out analysis. Next we pivot the genres wider to that they can be nicely formatted for out analysis.
 
@@ -230,11 +239,16 @@ movie_data <- movie_data %>%
     talkshow = `talk-show`
   )
 ```
+After all the filtering, we have 70087 films left in our data set. From this number, 60246 are movies and 9841 are series. The resulting standard deviation for the total of films is 1.12. 
+In the period from 2015 until 2019, the most amount of films were released being 11353, 2019 was the year with the biggest amount of releases, 2586 films. On the other hand, 1926 the least amount of films were released on IMDB, 54 films. 
+The average number of votes in the final dataset was 7146.
+In terms of runtime, the films are on average 101 minutes long.
+The average ratings of the films in our final data set is 6.3, the lowest rating noted as 1 and the highest as 10.
 
 ## Let's save our data file
 Don't leave before saving! 
 
 ```{r save file}
-write_csv(movie_data, "movie_data_cleaned.csv")
+write_csv(movie_data, "data/movie_data_cleaned.csv")
 ```
 
