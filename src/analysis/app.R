@@ -1,15 +1,11 @@
 library(shiny)
 library(tidyverse)
 library(fixest)
-library(tidyr)
-library(skimr)
-library(infer)
-library(modelsummary)
-library(broom)
-library(purrr)
-library(viridis)
-library(estimatr)
-library(pdftools)
+library(plotly)
+
+# Load graph data
+graph_data <- read_csv("graph_data.csv")
+
 
 # Define UI
 ui <- fluidPage(
@@ -17,11 +13,11 @@ ui <- fluidPage(
   mainPanel(
     fluidRow(
       column(6,
-             selectInput("genre_1", "Select Genre 1:", choices = unique(graph_data$genre.x)),
+             selectInput("genre_1", "Select Genre 1:", choices = unique(graph_data$genre)),
              plotlyOutput("plot_output_1")
       ),
       column(6,
-             selectInput("genre_2", "Select Genre 2:", choices = unique(graph_data$genre.x)),
+             selectInput("genre_2", "Select Genre 2:", choices = unique(graph_data$genre)),
              plotlyOutput("plot_output_2")
       )
     ),
@@ -36,7 +32,7 @@ server <- function(input, output, session) {
   output$plot_output_1 <- renderPlotly({
     selected_genre_data <- reactive({
       filtered_data <- graph_data %>%
-        filter(genre.x == input$genre_1)
+        filter(genre == input$genre_1)
       return(filtered_data)
     })
     
@@ -57,7 +53,7 @@ server <- function(input, output, session) {
   output$plot_output_2 <- renderPlotly({
     selected_genre_data <- reactive({
       filtered_data <- graph_data %>%
-        filter(genre.x == input$genre_2)
+        filter(genre == input$genre_2)
       return(filtered_data)
     })
     
@@ -78,7 +74,3 @@ server <- function(input, output, session) {
 
 # Run the application
 shinyApp(ui = ui, server = server)
-
-
-
-
