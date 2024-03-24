@@ -1,11 +1,8 @@
 ---
 title: Investigating the influence of genre preferences on movie/series rating patterns
   over time
-author: "Team 1 - Timo Philipse, Bram Teunissen, Rodrigo Pačeko Rudzājs, Dian de Ridder
-  & Linda van den Boogaart"
-output:
-  pdf_document: default
-  html_document: default
+author: "Team 1 - Timo Philipse, Bram Teunissen, Rodrigo Pačeko Rudzājs, Dian de Ridder & Linda van den Boogaart"
+output: pdf_document
 editor_options:
   markdown:
     wrap: 72
@@ -170,24 +167,29 @@ genre preferences for that period of time.
 ### Assumption
 
 All assumptions associated with regression were checked via a visual
-inspection. Only linearity appeared to be satisfied.
+inspection. Only normality appeared to be satisfied.
 
-```{r Normality, echo=FALSE, warning=FALSE}
-#insert pdf
+```{r echo=FALSE, warning=FALSE}
+library(knitr)
+
+knitr::include_graphics("../../gen/data_preparation/qq_normality.png")
 
 ```
 
 Homoscedasticity and independence appeared to be moderate at best.
 
-```{r}
-#insert pdf
+```{r echo=FALSE}
+knitr::include_graphics("../../gen/data_preparation/homoskedacity.png")
+```
+```{r echo=FALSE}
+knitr::include_graphics("../../gen/data_preparation/independence.png")
 ```
 
 Linearity appeared to be violated the most with a widening trend for all
 genres as the years evolved.
 
-```{r}
-#insert pdf
+```{r echo=FALSE}
+knitr::include_graphics("../../gen/data_preparation/linearity.png")
 ```
 
 Regardless of these results the decision was made to continue with the
@@ -199,16 +201,16 @@ it does help with them.
 
 ## Results and Discussion
 
-```{r}
-#insert pdf of results graph with colored dots
-```
-
 The results indicated that there are different genre preferences over
 time. Out of all twenty-five genres, only eighteen appeared to
 significantly influence the average ratings on IMDb. These genres were
 animation, biography, film-noir, fantasy, documentary, crime, comedy,
 game-show, history, horror, musical, shorts, sci-fi, romance,
 reality-tv, news, and war.
+
+```{r echo=FALSE}
+knitr::include_graphics("../../gen/data_analysis/results_plot.png")
+```
 
 The genre history fell in favor in around the year 1960 and continued to
 significantly (p~1960-1964~\<.01) relate to the average rating until
@@ -316,3 +318,11 @@ and series. Or it may be that other matters were stirring in the
 population which made them more happy or sad. These factors influence
 consumption patterns and thus ratings. By broadening the scope of the
 analysis results become more reliable.
+
+```{r saving}
+library(rmarkdown)
+
+render(input = "../../gen/paper/paper.Rmd",
+       output_format = "pdf_document",
+       output_file = "../../gen/paper/paper.pdf")
+```

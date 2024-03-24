@@ -1,15 +1,23 @@
+---
+title: "data_preparation"
+author: "Team 1 Data Prep"
+date: "2024-03-24"
+output: pdf_document
+---
+
 # Cleaning the Data
 So after retrieving and merging our data directly form the IMBD site, we now need to check and clean the data. In this markdown the data set is cleaned, reformatted and restructured.
 
-```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(tidyr)
 library(dplyr)
 library(stringr)
+library(rmarkdown)
 ```
 
 ```{r reformatting the data, message=FALSE, warning=FALSE, include=FALSE}
-movie_data <- read_csv("movie_data.csv")
+movie_data <- read_csv("../../data/movie_data.csv")
 
 movie_data <- movie_data %>%
   mutate(across(c(tconst, titleType, isAdult,genres, parentTconst,isOriginalTitle, types, originalTitle), as.factor)) %>%
@@ -40,7 +48,7 @@ ggsave("../../gen/data_preparation/distribution_of_average_ratings.png", distrib
 distribution_of_average_ratings
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r distribution_of_average_ratings_unrounded, echo=FALSE, message=FALSE, warning=FALSE}
 distribution_of_average_ratings_unrounded <- ggplot(movie_data, aes(x = averageRating)) +
   geom_histogram(binwidth = 0.1, fill = "orange", color = "black") +
   scale_x_continuous(breaks = seq(0, 10, by = 0.5), limits = c(0, 10), labels = scales::number_format(accuracy = 0.1)) +
@@ -61,7 +69,7 @@ print(summary(movie_data$numVotes))
 
 Do you see how the average movie only has 106 votes? Or even 5! That influences the averages.
 
-```{r Plot DV and numVotes, echo=FALSE, message=FALSE, warning=FALSE}
+```{r distribution_of_number_of_votes, echo=FALSE, message=FALSE, warning=FALSE}
 distribution_of_number_of_votes <- ggplot(movie_data, aes(x = numVotes)) +
   geom_dotplot(fill = "darkorange", color = "black", binwidth = 500) +
   labs(title = "Distribution of numVotes",
@@ -78,7 +86,7 @@ distribution_of_number_of_votes
 
 Okay, so let's filter some of there observations out. We want reliable data and these observation are unlikely to be reliable. But instead of arbitrarily unselecting observations we should plot the data and see where some issues lie. 
 
-```{r Filtering DV, echo=FALSE, message=FALSE, warning=FALSE}
+```{r distribution_of_number_of_votes_below_10, echo=FALSE, message=FALSE, warning=FALSE}
 below_100 <- movie_data %>%
   select(numVotes) %>%
   filter(numVotes < 100)
@@ -171,7 +179,7 @@ movie_data <- movie_data %>%
 
 Good. But before we can continue we have to do some 'eye-conemetrics' and show if there might be data pattern before we run our analysis. First, we look at how number of votes and rating behave for each genre.
 
-```{r echo=FALSE}
+```{r number_of_votes_vs_average_rating, echo=FALSE}
 number_of_votes_vs_average_rating <- ggplot(movie_data, aes(x = numVotes, y = averageRating, color= genres)) +
   geom_point() + 
   facet_wrap(~genres)
@@ -184,7 +192,7 @@ number_of_votes_vs_average_rating
 As you can see there is only a very small patern there. Typically, very few votes lead to all types of values, including extreme ones. However, as the number of votes seem to increase this extreme pattern decresaes slightly. This means that the number of votes continues to be relevant for our analysis and may even bias our results. 
 
 Let's see how the actual ratings are then distributed across genres
-```{r echo=FALSE}
+```{r number_of_votes_distributions_per_genre, echo=FALSE}
 number_of_votes_distributions_per_genre <- ggplot(movie_data, aes(averageRating, color= genres))+
   geom_bar() +
   facet_wrap(~genres)
@@ -196,7 +204,7 @@ number_of_votes_distributions_per_genre
 
 As you can see, most of the genres appear to have some normal distribution going on. This is great! let's look at it with a qq plot to confirm our enthousiasm.
 
-```{r echo=FALSE}
+```{r qq_normality, echo=FALSE}
 qq_normality <- ggplot(movie_data, aes(sample = averageRating, color = genres)) +
   stat_qq() +
   facet_wrap(~genres)
@@ -208,7 +216,7 @@ qq_normality
 
 Okay, so it looks like there is some normal distribution. How about homoscedasticity?
 
-```{r echo=FALSE}
+```{r homoskedacity, echo=FALSE}
 residuals <- movie_data$averageRating - mean(movie_data$averageRating)
 fitted_values <- movie_data$averageRating
 
@@ -230,7 +238,7 @@ homoskedacity
 
 That also looks suspiciously good! How about independence?
 
-```{r echo=FALSE}
+```{r independence, echo=FALSE}
 # Calculate residuals
 residuals <- movie_data$averageRating - mean(movie_data$averageRating)
 
@@ -253,9 +261,9 @@ independence
 
 ```
 
-Linearity looks chaotic but okay. It may be a little smaller on the left and increases to the right but this is very little. So we move on the last assumption, linearity. This is tricky, because there is no reason for genre to lead to a higher or lower rating. This is really specific to the watcher and also how the movie/series are doing. But when we add the time variable it can be that there is a relation between these elements, albeit unlikely to be linear. 
+Indepdence looks chaotic but okay. It may be a little smaller on the left and increases to the right but this is very little. So we move on the last assumption, linearity. This is tricky, because there is no reason for genre to lead to a higher or lower rating. This is really specific to the watcher and also how the movie/series are doing. But when we add the time variable it can be that there is a relation between these elements, albeit unlikely to be linear. 
 
-```{r echo=FALSE}
+```{r linearity, echo=FALSE}
 linearity <- ggplot(movie_data, aes(x = slide_window_5, y = averageRating)) +
   geom_point() +
   facet_wrap(~genres)
@@ -281,6 +289,7 @@ movie_data <- movie_data %>%
     talkshow = `talk-show`
   )
 ```
+
 After all the filtering, we have 70087 films left in our data set. From this number, 60246 are movies and 9841 are series. The resulting standard deviation for the total of films is 1.12. 
 In the period from 2015 until 2019, the most amount of films were released being 11353, 2019 was the year with the biggest amount of releases, 2586 films. On the other hand, 1926 the least amount of films were released on IMDB, 54 films. 
 The average number of votes in the final dataset was 7146.
@@ -290,7 +299,8 @@ The average ratings of the films in our final data set is 6.3, the lowest rating
 ## Let's save our data file
 Don't leave before saving! 
 
-```{r save file}
-write_csv(movie_data, "data/movie_data_cleaned.csv")
+```{r save file, echo=TRUE}
+write_csv(movie_data, "../../data/movie_data_cleaned.csv")
 ```
+
 

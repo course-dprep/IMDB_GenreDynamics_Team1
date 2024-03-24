@@ -1,12 +1,14 @@
 ---
-output:
-  pdf_document: default
-  html_document: default
+title: "regression analysis"
+author: "Team 1 Data Prep"
+date: "2024-03-24"
+output: pdf_document
 ---
+
 # Let's run our analysis! 
 ## And see how genre prefferences as inferred from average ratings evolve over time
 
-```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(fixest)
 library(skimr)
@@ -17,11 +19,12 @@ library(purrr)
 library(viridis)
 library(estimatr)
 library(pdftools)
+library(rmarkdown)
 ```
 
 Let's start with loading the data 
-```{r include=FALSE}
-mdc <- read_csv("data/movie_data_cleaned.csv")
+```{r retrieving data, include=FALSE}
+mdc <- read_csv("../../data/movie_data_cleaned.csv")
 ```
 
 ## basic skeleton model
@@ -31,7 +34,7 @@ Let's start with a simple skeleton model and build it from there in gradual step
 simple_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news,
                       data = mdc,
                       split = ~ slide_window_5)
-summary(simple_model)
+etable(simple_model)
 ```
 So we now have the most basic form of a regression to work with. If you click around a bit you see that within the 5 year time windows some genres become significant, others stay significant and some become insignificant. However, this is the most basic form of a regression and correlational at best. Therefore we are going to extent this formula a bit and see how it evolves to something that may become a little more causal.
 
@@ -39,51 +42,45 @@ So we now have the most basic form of a regression to work with. If you click ar
 ### titleType
 We are observing behavior over time. But we are currently observing behavior for multiple types of behavior. Or more specifically, for both movies AND series. But these are two different things. So while we still want to know the general genre preference trends, we need to adjust for movie vs. series. 
 
-```{r echo=FALSE}
+```{r skeleton model + titleType fixed effect, echo=FALSE, warning=FALSE}
 fixed_type_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
                                 data = mdc,
                                 split = ~ slide_window_5)
 
-summary(fixed_type_model)
+etable(fixed_type_model)
 ```
 
 
 If you compare these results against our skeleton model you may see that the standard errors have increased. This is good! this means our analysis has become a little more robust. But let's check our R-squared to be sure.
-
-```{r echo=FALSE}
-coeftable(simple_model)
-```
-
-```{r echo=FALSE}
-coeftable(fixed_type_model)
-```
 
 Good most of our r-sqaures are improving. This means this added fixed effects was a good one. 
 
 ### title of movie vs. serie
 Next one we want to capture some unobservable effects that are know to the raters but unknown to us. For example, script, plot and actor quality. But also things like music and other elements captured in the series that are outside of the data set.
 
-```{r include=FALSE}
+```{r model + clustered errors, include=FALSE}
 fixed_tt_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType,
                                 data = mdc,
                                 split = ~ slide_window_5)
+
+etable(fixed_tt_model)
 ```
 
 Last, because while out regression assumptions are mostly respected we still may want to increase the robustness of the coefficients. We do this by loosening these assumptions a little, given that heteroscedasticity appears to be a little shady we loosen that assumption a little and then check the R-squared again.
 
-```{r assumptions, echo=FALSE}
+```{r model + hetrogeinity adjustement, echo=FALSE}
 
 fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thriller+ history + comedy + fantasy + adventure + mystery + biography + action + scifi + western + horror + sport + documentary + musical + filmnoir + animation + adult + gameshow + realitytv + talkshow + short + news | titleType ,
                                 vcov = "hetero",
                                 data = mdc,
                                 split = ~ slide_window_5)
 
-coeftable(fixed_tth_model)
+etable(fixed_tth_model)
 ```
 
 Good this has a small but positive effect. Now we want to plot the results.
 
-```{r plotting results}
+```{r plotting results, echo=FALSE}
 #getting the coefficients
 list_of_coeficients <- coef(fixed_tth_model)
 #getting
@@ -112,64 +109,25 @@ graph_data <- graph_data %>%
     p_threshold = coef_value / std_dev_value,
     p_significance = ifelse(p_threshold > 1.96, 1, 0))
     
-ggplot(graph_data, aes(x = sample, y = coef_value, color = factor(p_significance))) +
+results_plot <- ggplot(graph_data, aes(x = sample, y = coef_value, color = factor(p_significance))) +
   geom_point() +
   geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
   scale_color_manual(values = c("red", "green")) +
   xlab("Estimates") + ylab("Years") +
-  facet_wrap(~ genre)
+  facet_wrap(~ genre) + theme_minimal() 
+
+ggsave("../../gen/data_analysis/results_plot.png", results_plot)
+
+results_plot
 ```
 As you can see from the plot some genres, such as romance, are largely significant are nicely consistent over the years. However, genres such as game-shows or news (which only rose after the 2000's) do not have observations for all years and the observations that are there are remarkably volatile given their large confidence intervals. 
 
-Next we want to see how a specific genre evolves over the years. 
-
-```{r}
-list_of_coeficients <- coef(fixed_tth_model) %>%
-  select(-id, -sample.var)
-
-list_of_standard_deviations <- se(fixed_tth_model) %>%
-  select(-id,-sample.var)
-
-list_of_coeficients_long <- list_of_coeficients %>%
-  pivot_longer(cols = -sample, names_to = "genre", values_to = "coef_value") %>%
-
-# Pivot standard deviations longer
-list_of_standard_deviations_long <- list_of_standard_deviations %>%
-  pivot_longer(cols = -sample, names_to = "genre", values_to = "std_dev_value")
-  
-# Calculate p_threshold for each genre
-graph_data <- left_join(list_of_coeficients_long, list_of_standard_deviations_long, by = "sample") %>%
-  mutate(across(c(genre.x, genre.y), as.factor)) %>% 
-  filter(genre.x == genre.y) %>%
-  mutate(p_threshold = coef_value / std_dev_value,
-         p_significance = ifelse(p_threshold > 1.96, 1, 0))
-
-conf_level <- 0.95
-z_value <- qnorm((1 + conf_level) / 2)
-
-# Calculate confidence intervals
-graph_data <- graph_data %>%
-  mutate(
-    lower_ci = coef_value - z_value * std_dev_value,
-    upper_ci = coef_value + z_value * std_dev_value
-  )
-
-graph_data <- graph_data %>%
-  drop_na()
-
-# Plot with confidence intervals
-ggplot(graph_data, aes(x = sample, y = coef_value, color = factor(p_significance))) +
-  geom_point() +
-  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
-  scale_color_manual(values = c("red", "green")) +
-  xlab("Estimates") + ylab("Years") + facet_wrap(~genre.x) +
-  scale_x_discrete(breaks = unique(graph_data$sample)[seq(1, length(unique(graph_data$sample)), length.out = 4)])
-```
-
-As you can see some genres are never significant, e.g., sports and thriller. While others become significant and never stop, e.g., history. There are also speaks in genres like war, where it seems to be falling in and out of favor. 
+Additionally, some genres are never significant, e.g., sports and thriller. While others become significant and never stop, e.g., history. There are also speaks in genres like war, where it seems to be falling in and out of favor. 
 
 
 ```{r saving the doc}
-#insert pdf knit path
+render("../../src/analysis/regression_analysis.Rmd",
+       output_format = "pdf_document",
+       "../../gen/data_analysis/regression_analysis.pdf")
 ``` 
 
