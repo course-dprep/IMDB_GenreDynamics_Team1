@@ -106,24 +106,24 @@ genre preferences for that period of time.
 ### Assumption
 
 All assumptions associated with regression were checked via a visual
-inspection. Only linearity appeared to be satisfied.
+inspection. Only normality appeared to be satisfied.
 
 ```{r Normality, echo=FALSE, warning=FALSE}
-#insert pdf
-
+knitr::include_graphics("../../gen/data_prep/output/figure/averageRating_frequency_by_genre.pdf")
 ```
 
 Homoscedasticity and independence appeared to be moderate at best.
 
-```{r}
-#insert pdf
+```{r plots, echo=FALSE}
+knitr::include_graphics("../../gen/data_prep/output/figure/averageRating_homoscedasticity.pdf")
+knitr::include_graphics("../../gen/data_prep/output/figure/averageRating_independence.pdf")
 ```
 
 Linearity appeared to be violated the most with a widening trend for all
 genres as the years evolved.
 
 ```{r}
-#insert pdf
+knitr::include_graphics("../../gen/data_prep/output/figure/averageRating_linearity.pdf")
 ```
 
 Regardless of these results the decision was made to continue with the
@@ -135,7 +135,7 @@ it does help with them.
 
 ## Results and Discussion
 ```{r}
-#insert pdf of results graph with colored dots
+knitr::include_graphics("../../gen/analysis/output/figure/plotted_results_regression_analysis.pdf")
 ```
 
 The results indicated that there are different genre preferences over

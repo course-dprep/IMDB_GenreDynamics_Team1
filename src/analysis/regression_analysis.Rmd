@@ -79,7 +79,7 @@ etable(fixed_tth_model)
 
 Good this has a small but positive effect. Now we want to plot the results.
 
-```{r plotting results}
+```{r plotting results, warning=FALSE}
 #getting the coefficients
 list_of_coeficients <- coef(fixed_tth_model)
 #getting
@@ -115,6 +115,8 @@ ggplot(graph_data, aes(x = sample, y = coef_value, color = factor(p_significance
   xlab("Estimates") + ylab("Years") +
   facet_wrap(~ genre)
 
+dir.create("../../gen/analysis/output/figure", recursive = T)
+ggsave(filename = "plotted_results_regression_analysis.pdf", plot = last_plot(), device = "pdf", path = "../../gen/analysis/output/figure/")
 ```
 
 ```{r saving the doc}
