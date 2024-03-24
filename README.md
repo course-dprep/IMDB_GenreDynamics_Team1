@@ -2,7 +2,13 @@
 
 ## Research Motivation
 
-The entertainment industry is a dynamic industry. Consumer preferences continuously change, and new movies and series are continuously being produced. Genre continues to be an important topic in the entertainment industry. Genre preferences indicate what consumers liked to watch in the past, and therefore probably also would like to watch in the future. Thus, genre can serve as a selection criteria, based on which consumers decide whether to watch a certain movie or not. Therefore, an understanding of genre preferences gives movie producers a direction on what type of genre they should adopt to increase chances of success and to best deliver the message they want to bring across. Consequently, it is important to investigate the evolution of consumers’ genre preferences over time, which will be done in the current repository. 
+The entertainment industry is highly dynamic. Consumer preferences keep changing, and new movies and series are produced regularly. These changes in preferences require the industry to respond accordingly. For
+example, showing an ankle in a movie might have been considered scandalous in the 1950s, but it is now just a minor detail. To make an impact in such an ever-evolving industry, movie directors need to get creative. These changes in the industry influence how movies and series are produced and how consumers react to them. One way to understand these patterns is by examining the genre of a product. 
+
+Genre preferences reflect what consumers have enjoyed watching in the past, and hence are likely to enjoy in the future. Therefore, genre can be used as a criterion for selecting productions, based on which consumers decide whether to watch a particular production or not. An understanding of genre preferences provides filmmakers with guidance on which genre to choose to increase the chances of success and to best
+convey their intended message. However, the nature of genres is constantly evolving, and it is important to comprehend how current consumers respond to the evolution of a genre over time. For instance, an action movie today might have rapid scene changes, multiple plot twists, and lengthy fight scenes, but on average, such movies may only receive moderate ratings at best. In contrast, action movies from two decades ago had a more gradual plot development and were less overwhelming, yet they received a higher average rating. When consumers rely on the genre productions of the past to make their choice, it may adversely impact their evaluation of a current production in the same genre.
+
+In order to gain a better understanding of how modern consumers rate products and services, it is crucial to comprehend how they use their past preferences as a point of reference. Hence, this research paper aims to explore whether there exist any discernible patterns in genre preferences over time, and whether some genres tend to have a greater impact on average ratings than others.
 
 ## Method and results
 
@@ -17,34 +23,31 @@ The results showed that 18 out of 25 genres influenced average ratings over time
 ```
 ├── data
 ├── gen
-│   ├── analysis
+│   ├── data_preperation
 │   │   ├── input
 │   │   ├── output
-│   │   │   ├── figure
-│   │   │   ├── log
-│   │   │   └── table
+│   │   │   ├── table
+│   │   │   └──  figures
 │   │   └── temp
-│   ├── data_preparation
-│   │   ├── audit
-│   │   │   ├── figure
-│   │   │   ├── log
-│   │   │   └── table
+│   ├── data_analysis
 │   │   ├── input
+│   │   │   └── figures
 │   │   ├── output
-│   │   │   ├── figure
-│   │   │   ├── log
-│   │   │   └── table
+│   │   │   └──  pdf
 │   │   └── temp
 │   └── paper
 └── src
-    ├── analysis
-    └── data_prep
+│   ├── data_generation
+│   └── data_prep
+│   └── analysis
+└── web_app
+
 ```
     
 * gen: all generated files such as tables, figures, logs.
   - Three parts: data_preparation, analysis, and paper.
   - audit: put the resulting log/tables/figures of audit program. It has three sub-folders: figure, log, and table.
-  - temp : put the temporary files, such as some intermediate datasets. We may delete these filed in the end.
+  - temp : put the temporary files, such as some intermediate datasets. We may delete these files in the end.
   - output: put results, including the generated figures in sub-folder figure, log files in sub-folder log, and tables in sub-folder table.
   - input: put all temporary input files
 * data: all raw data.
@@ -52,7 +55,6 @@ The results showed that 18 out of 25 genres influenced average ratings over time
   -Three parts: Getting_the_Data, Data_Prep, and analysis.
 
 ## Running instructions
-
 ### Required programs
 
 The workflow of the current repository depends on a few programs: 
