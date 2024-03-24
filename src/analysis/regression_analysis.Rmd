@@ -1,10 +1,14 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Let's run our analysis! 
 ## And see how genre prefferences as inferred from average ratings evolve over time
 
 ```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(fixest)
-library(tidyr)
 library(skimr)
 library(infer)
 library(modelsummary)
@@ -47,11 +51,11 @@ summary(fixed_type_model)
 If you compare these results against our skeleton model you may see that the standard errors have increased. This is good! this means our analysis has become a little more robust. But let's check our R-squared to be sure.
 
 ```{r echo=FALSE}
-etable(simple_model)
+coeftable(simple_model)
 ```
 
 ```{r echo=FALSE}
-etable(fixed_type_model)
+coeftable(fixed_type_model)
 ```
 
 Good most of our r-sqaures are improving. This means this added fixed effects was a good one. 
@@ -74,7 +78,7 @@ fixed_tth_model <- feols(averageRating ~ drama + romance + war + crime + thrille
                                 data = mdc,
                                 split = ~ slide_window_5)
 
-etable(fixed_tth_model)
+coeftable(fixed_tth_model)
 ```
 
 Good this has a small but positive effect. Now we want to plot the results.
@@ -114,8 +118,56 @@ ggplot(graph_data, aes(x = sample, y = coef_value, color = factor(p_significance
   scale_color_manual(values = c("red", "green")) +
   xlab("Estimates") + ylab("Years") +
   facet_wrap(~ genre)
-
 ```
+As you can see from the plot some genres, such as romance, are largely significant are nicely consistent over the years. However, genres such as game-shows or news (which only rose after the 2000's) do not have observations for all years and the observations that are there are remarkably volatile given their large confidence intervals. 
+
+Next we want to see how a specific genre evolves over the years. 
+
+```{r}
+list_of_coeficients <- coef(fixed_tth_model) %>%
+  select(-id, -sample.var)
+
+list_of_standard_deviations <- se(fixed_tth_model) %>%
+  select(-id,-sample.var)
+
+list_of_coeficients_long <- list_of_coeficients %>%
+  pivot_longer(cols = -sample, names_to = "genre", values_to = "coef_value") %>%
+
+# Pivot standard deviations longer
+list_of_standard_deviations_long <- list_of_standard_deviations %>%
+  pivot_longer(cols = -sample, names_to = "genre", values_to = "std_dev_value")
+  
+# Calculate p_threshold for each genre
+graph_data <- left_join(list_of_coeficients_long, list_of_standard_deviations_long, by = "sample") %>%
+  mutate(across(c(genre.x, genre.y), as.factor)) %>% 
+  filter(genre.x == genre.y) %>%
+  mutate(p_threshold = coef_value / std_dev_value,
+         p_significance = ifelse(p_threshold > 1.96, 1, 0))
+
+conf_level <- 0.95
+z_value <- qnorm((1 + conf_level) / 2)
+
+# Calculate confidence intervals
+graph_data <- graph_data %>%
+  mutate(
+    lower_ci = coef_value - z_value * std_dev_value,
+    upper_ci = coef_value + z_value * std_dev_value
+  )
+
+graph_data <- graph_data %>%
+  drop_na()
+
+# Plot with confidence intervals
+ggplot(graph_data, aes(x = sample, y = coef_value, color = factor(p_significance))) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
+  scale_color_manual(values = c("red", "green")) +
+  xlab("Estimates") + ylab("Years") + facet_wrap(~genre.x) +
+  scale_x_discrete(breaks = unique(graph_data$sample)[seq(1, length(unique(graph_data$sample)), length.out = 4)])
+```
+
+As you can see some genres are never significant, e.g., sports and thriller. While others become significant and never stop, e.g., history. There are also speaks in genres like war, where it seems to be falling in and out of favor. 
+
 
 ```{r saving the doc}
 #insert pdf knit path

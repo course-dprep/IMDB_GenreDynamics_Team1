@@ -1,8 +1,11 @@
 library(shiny)
+library(tidyverse)
+library(fixest)
 library(plotly)
 
 # Load graph data
 graph_data <- read_csv("graph_data.csv")
+
 
 # Define UI
 ui <- fluidPage(
@@ -71,5 +74,3 @@ server <- function(input, output, session) {
 
 # Run the application
 shinyApp(ui = ui, server = server)
-
-
