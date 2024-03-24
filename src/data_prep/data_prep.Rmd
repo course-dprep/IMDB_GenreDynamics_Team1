@@ -143,7 +143,7 @@ movie_data <- movie_data %>%
 ```
 After filtering to only series and movies, we end up with 120273 movies and 27722 series.
 
-We are interest in genre patterns over time. However, these patterns may change not as quickly as on a yearly basis. Therefore, we construct a window that captures 5 years of viewer patterns. Because we do not know how these averRating votes dynamicly evolve over time (for series), we assume that the yearStart is the year in which the most number of votes (numVotes) are generated. This is logical, because if the average rating is positive the series will be continued, and if the reviews are negative the series will be likely to be discontinued. How the rating drops as the perceived quality of the series drops over time, is for the purpose of this study, left out of the equation.
+We are interest in genre patterns over time. However, these patterns may change not as quickly as on a yearly basis. Therefore, we construct a window that captures 5 years of viewer patterns. Because we do not know how these averRating votes dynamically evolve over time (for series), we assume that the yearStart is the year in which the most number of votes (numVotes) are generated. This is logical, because if the average rating is positive the series will be continued, and if the reviews are negative the series will be likely to be discontinued. How the rating drops as the perceived quality of the series drops over time, is for the purpose of this study, left out of the equation.
 
 ```{r echo=FALSE}
 movie_data <- movie_data %>%
@@ -177,7 +177,7 @@ movie_data <- movie_data %>%
 
 ```
 
-Good. But before we can continue we have to do some 'eye-conemetrics' and show if there might be data pattern before we run our analysis. First, we look at how number of votes and rating behave for each genre.
+Good. But before we can continue we have to do some 'eye-econemetrics' and show if there might be data pattern before we run our analysis. First, we look at how number of votes and rating behave for each genre.
 
 ```{r number_of_votes_vs_average_rating, echo=FALSE}
 number_of_votes_vs_average_rating <- ggplot(movie_data, aes(x = numVotes, y = averageRating, color= genres)) +
@@ -189,7 +189,7 @@ ggsave("../../gen/data_preparation/number_of_votes_vs_average_rating.png", numbe
 number_of_votes_vs_average_rating
 ```
 
-As you can see there is only a very small patern there. Typically, very few votes lead to all types of values, including extreme ones. However, as the number of votes seem to increase this extreme pattern decresaes slightly. This means that the number of votes continues to be relevant for our analysis and may even bias our results. 
+As you can see there is only a very small pattern there. Typically, very few votes lead to all types of values, including extreme ones. However, as the number of votes seem to increase this extreme pattern decreases slightly. This means that the number of votes continues to be relevant for our analysis and may even bias our results. 
 
 Let's see how the actual ratings are then distributed across genres
 ```{r number_of_votes_distributions_per_genre, echo=FALSE}
@@ -202,7 +202,7 @@ ggsave("../../gen/data_preparation/number_of_votes_distributions_per_genre.png",
 number_of_votes_distributions_per_genre
 ```
 
-As you can see, most of the genres appear to have some normal distribution going on. This is great! let's look at it with a qq plot to confirm our enthousiasm.
+As you can see, most of the genres appear to have some normal distribution going on. This is great! let's look at it with a qq plot to confirm our enthusiasm.
 
 ```{r qq_normality, echo=FALSE}
 qq_normality <- ggplot(movie_data, aes(sample = averageRating, color = genres)) +

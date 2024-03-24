@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 # Let's run our analysis! 
-## And see how genre prefferences as inferred from average ratings evolve over time
+## And see how genre preferences as inferred from average ratings evolve over time
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
