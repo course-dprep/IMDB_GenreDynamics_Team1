@@ -173,7 +173,6 @@ inspection. Only normality appeared to be satisfied.
 library(knitr)
 
 knitr::include_graphics("../../gen/data_preparation/qq_normality.png")
-
 ```
 
 Homoscedasticity and independence appeared to be moderate at best.
@@ -319,7 +318,7 @@ population which made them more happy or sad. These factors influence
 consumption patterns and thus ratings. By broadening the scope of the
 analysis results become more reliable.
 
-```{r saving}
+```{r}
 library(rmarkdown)
 
 render(input = "../../gen/paper/paper.Rmd",
