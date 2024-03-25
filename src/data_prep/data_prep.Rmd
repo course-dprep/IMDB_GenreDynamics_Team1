@@ -14,6 +14,10 @@ library(tidyr)
 library(dplyr)
 library(stringr)
 library(rmarkdown)
+library(tinytex)
+library(pdftools)
+library(latexpdf)
+library(latexdiffr) 
 ```
 
 ```{r reformatting the data, message=FALSE, warning=FALSE, include=FALSE}

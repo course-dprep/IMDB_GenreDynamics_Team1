@@ -9,6 +9,13 @@ editor_options:
     wrap: 72
 ---
 
+```{undefined include=FALSE}
+library(rmarkdown)
+library(tinytex)
+library(pdftools)
+library(latexpdf)
+library(latexdiffr) 
+```
 # Research motivation
 
 The entertainment industry is highly dynamic. Consumer preferences keep
