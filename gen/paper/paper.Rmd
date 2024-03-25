@@ -2,7 +2,8 @@
 title: Investigating the influence of genre preferences on movie/series rating patterns
   over time
 author: "Team 1 - Timo Philipse, Bram Teunissen, Rodrigo Pačeko Rudzājs, Dian de Ridder & Linda van den Boogaart"
-output: pdf_document
+output: 
+  pdf_document: {}
 editor_options:
   markdown:
     wrap: 72
@@ -59,24 +60,21 @@ The research results shed light on how consumers use dynamic genres to
 shape their satisfaction with a movie or TV series. The findings suggest
 that some genres are preferred in certain years over others. For
 example, war movies tend to receive higher ratings during world wars
-compared to times of peace. This implies that consumers use these
+compared to times of peace. This may imply that consumers use these
 productions as references to rate them in context of the sign of the
 times. Managers may want to consider adjusting their productions to
 better suit the elements in those preferred years.
 
 The study also found that recent fantasy movies tend to receive lower
 ratings from consumers, while those produced in the 70s are rated more
-favorably. Overall, the results suggest that managers may face
+favorably. Overall, the results may suggest that managers may face
 challenges in meeting previously set expectations and that these
 findings provide a reference frame for when those expectations are met.
 
 Additionally, the results also provide insights into how genres are
 related to average ratings across another. Currently, every production
 has a similar pattern of ingredients. Most movies contain hints of drama
-and romance. Whether it is in a distropian sci-fi survival movie or an
-horror action series. However, the results indicated that these common
-genres are not significantly related to the average ratings. In contrast
-some movies and series do contain unique elements do results in
+and romance, regardless of whether it is in a distropian sci-fi survival movie or an horror action series. However, the results indicated that these common genres are not significantly related to the average ratings. In contrast some movies and series do contain unique elements do results in
 significant relationships. For example, biographies and animations. This
 may imply that consumers may not rely so heavily on past genres that are
 common because they gradually change with times without consumers
@@ -89,15 +87,14 @@ strongly on the less common genre features compared to more common ones.
 ## Research method
 
 In this paper we investigate consumers’ movie and series preferences
-using four of IMDb's datasets containing movie data. First, these
+using four of IMDb's data sets containing movie data. First, these
 
-datasets are loaded, cleaned, inspected, merged and cleaned. Next, the
-data is analyzed using a regression analysis. This regression analysis
-regresses all movie and series genre's against the average rating's over
-a sliding period of 5 years. Additionally, the variables title,
-movieType and time are used as control variables to improve the
-interpret ability of the estimates.
+Data sets are loaded, cleaned, inspected, merged and cleaned. Next, the
+data is analyzed using a regression analysis. This method was chosen due to the continuous nature of the dependent variable and the categorical nature of the independent variables. The reason why a regression was chosen over the alternative of an ANOVA was due to the size and complexity of the analysis. There are 27 genres included as a dependent variable, and are measure over time. To include these features into an ANOVA is far more complex compared to a regression analysis. 
 
+This regression analysis regresses all movie and series genre's against the average rating's over a sliding period of 5 years. Additionally, the variables title, movieType and time are used as control variables to improve the interpret ability of the estimates. Additionally, because some of the assumptions were only robustly satisfied, the standard errors were clustered. The analysis resulted in a 20 window output, one for each year window.  
+
+A note of attention should be, that despite the richness of the data, the interpretation of the results remain descriptive at bests. This is because the average movie ratings are not reported over time but are merely a static measure of today's average. This implies that a single coefficient is read as "The genre X produced in the year Y is positively/negatively associated with the average movie rating of today."
 
 | Name of Variable | Contents of Variable                                                                                                                                             | Used as .. in Analysis |
 |------------|-------------------------------------------------|------------|
@@ -108,7 +105,8 @@ interpret ability of the estimates.
 | 5 Year Window    | The 5 year window (or ' slide_window_5' indicates between what 5 year window a movie or series belongs to. For example a movie from 2003 belonging to 2000-2004 | Split Variable          |
 
 ### Descriptives
-The data set contains of 70087 films, of which 60246 are movies and 9841 are series.  These films have on average a rating of 6.3, with 10 being the highest and 1 being the lowest. After removing the votes to all being above 100, the average number of votes on a film became 7146. When looking at the years, the most amount of films were released on IMDb in 2019, with 2586 films. Also when comparing the 5 year range of films released,2015 to 2019 had the most films released, with 11353 films. Looking at the runtime of the films, on average a film is 101 minutes long.
+
+The data set contains of 70087 films, of which 60246 are movies and 9841 are series.  These films have on average a rating of 6.3, with 10 being the highest and 1 being the lowest. After removing the votes to all being above 100, the average number of votes on a film became 7146. When looking at the years, the most amount of films were released on IMDb in 2019, with 2586 films. Also when comparing the 5 year range of films released,2015 to 2019 had the most films released, with 11353 films. LAst, when looking at the run time of the films, on average a film is 101 minutes long.
 
 
 ### Outcome Variable: Average Movie Rating
@@ -120,7 +118,9 @@ rating, including the extreme ones, receives more weight when
 calculating the average, simply because there are only a few ratings.
 So, the average ratings may be more extreme, causing to skew the overall
 results. Therefore, movies/series receiving a number of votes below the
-cut-off of a hundred will not be included in the regression analysis.
+cut-off of a hundred will not be included in the regression analysis. 
+
+Please note the average movie rating is a static measure that does not change the dynamics of the rating. For example, we can only see today's average rating but not that of 2 hours, 2 days, or even 2 years ago. 
 
 ### Explanatory Variable: Genres
 
@@ -149,7 +149,7 @@ low in the starting year and thus unlikely to be significant.
 Additionally, since IMDb was not around in 1925, average ratings for
 movies and series originating from that time may be strongly biased
 because a niche selection of the population may be watching these movies
-in the first place.
+in the first place. Therefore, regardless of the additions of these fixed effects the results of the analysis are correlational at best. 
 
 ### Capturing preferences over time
 
@@ -161,13 +161,15 @@ as a means to calculate behavior over time. Yet, the individual years
 are unlikely to have a remarkable effect on the genre preference trends.
 This is because the effects are so nuanced that they are unlikely to be
 detected. Therefore, a five-year window was created that captures all 
-genre preferences for that period of time.
+genre preferences for that period of time. This window was constructed by grouping all productions in an interval of five years. 
 
 
 ### Assumption
 
 All assumptions associated with regression were checked via a visual
 inspection. Only normality appeared to be satisfied.
+
+#### Normality
 
 ```{r echo=FALSE, warning=FALSE}
 library(knitr)
@@ -177,12 +179,20 @@ knitr::include_graphics("../../gen/data_preparation/qq_normality.png")
 
 Homoscedasticity and independence appeared to be moderate at best.
 
+#### Homoskedacity
+
 ```{r echo=FALSE}
 knitr::include_graphics("../../gen/data_preparation/homoskedacity.png")
 ```
+
+#### Independence
+
 ```{r echo=FALSE}
 knitr::include_graphics("../../gen/data_preparation/independence.png")
 ```
+
+
+#### Linearity 
 
 Linearity appeared to be violated the most with a widening trend for all
 genres as the years evolved.
@@ -273,14 +283,13 @@ necessary to fine-tune these claims the current research does provide
 insight into how raters' watch patterns appear to alter. For example, it
 shows that the common ingredients like romance and action may not stand
 out as much as biography and history might. 
-The results of this analysis can be, at best, interpreted as correlational 
+
+The results of this analysis can be, at best, interpreted as descriptive 
 given the vast amount of assumptions and potential hidden dangers of 
 sampling biases (e.g., film-noir and war genres). While this has been 
-partially mitigated by loosening some of the underlying assumptions and 
-adding fixed effects, the fact remains that these appear as trend 
+partially mitigated by loosening some of the underlying assumptions (clustering standard errors and selecting a better heterogeneity method) and adding fixed effects, the fact remains that these appear as trend 
 observations. Therefore, the results do not necessarily conclude that some 
-genres lead to higher average ratings. However, the results do indicate that 
-there may be preferences over time that may lead to higher average ratings.
+genres lead to higher average ratings. However, the results do indicate that there may be preferences over time that may lead to higher average ratings.
 
 ## Extensions
 
@@ -317,11 +326,3 @@ and series. Or it may be that other matters were stirring in the
 population which made them more happy or sad. These factors influence
 consumption patterns and thus ratings. By broadening the scope of the
 analysis results become more reliable.
-
-```{r}
-library(rmarkdown)
-
-render(input = "../../gen/paper/paper.Rmd",
-       output_format = "pdf_document",
-       output_file = "../../gen/paper/paper.pdf")
-```
