@@ -18,4 +18,5 @@ for (url in Data_Source) {
         file.remove(file_name) # Remove the downloaded file
 }
 
+dir.create("data") # Create a directory to save the data
 save.image("data/movie_data.RData")
