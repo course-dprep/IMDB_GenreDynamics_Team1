@@ -63,7 +63,7 @@ The workflow of the current repository depends on a few programs:
 * R - programming language used to run code [Installation guide R and RStudio](https://tilburgsciencehub.com/topics/computer-setup/software-installation/rstudio/r/)
 * RStudio - software that makes running R easier [Installation guide R and RStudio](https://tilburgsciencehub.com/topics/computer-setup/software-installation/rstudio/r/)
 * Make - tool to automate the workflow [Installation guide](https://tilburgsciencehub.com/topics/automation/automation-tools/makefiles/make])
-
+* VPN - Please make sure that you are connected to a vpn if you have one. This will improve the collection of the data. Otherwise IMDB will occasionally block you.
 ### How to get started
 
 1. Install the required programs (see installation guides in the previous section).
