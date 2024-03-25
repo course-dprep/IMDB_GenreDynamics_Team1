@@ -20,6 +20,9 @@ library(viridis)
 library(estimatr)
 library(pdftools)
 library(rmarkdown)
+library(tinytex)
+library(latexpdf)
+library(latexdiffr) 
 ```
 
 Let's start with loading the data 
